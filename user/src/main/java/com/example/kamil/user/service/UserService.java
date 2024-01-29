@@ -1,12 +1,14 @@
 package com.example.kamil.user.service;
 
+import com.example.kamil.user.dto.UserDTO;
 import com.example.kamil.user.entity.User;
+import com.example.kamil.user.payload.CreateUserRequest;
 
 import java.util.List;
 
 public interface UserService {
-    User getUserByEmail(String email);
-    void insertUser(User user);
+    UserDTO getUserByEmail(String email);
+    void insertUser(CreateUserRequest userRequest);
     List<User> getAll();
     boolean deleteUser(String email);
     void deactivateUser();

@@ -1,23 +1,21 @@
 package com.example.kamil.user.dto;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
-@Setter
-@ToString
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class UserDTO {
 
-	
-	private String name;
-	
-	private String surname;
-	
 	private String username;
-	
-	private String password;
-	
 	private String email;
+
+	//private String password;
+	private String firstName;
+	private String lastName;
 
 }

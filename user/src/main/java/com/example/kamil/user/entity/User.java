@@ -1,17 +1,17 @@
 package com.example.kamil.user.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "users")
 @Data
 public class User  {
 	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
+	@GeneratedValue()
 	private Long id;
 
 	@Column(unique = true)

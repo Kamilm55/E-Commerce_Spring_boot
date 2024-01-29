@@ -1,6 +1,8 @@
 package com.example.kamil.user.service;
 
+import com.example.kamil.user.dto.UserDTO;
 import com.example.kamil.user.entity.User;
+import com.example.kamil.user.payload.CreateUserRequest;
 import com.example.kamil.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,12 +16,29 @@ public class UserServiceImpl implements UserService{
     private final UserRepository userRepository;
 
     @Override
-    public User getUserByEmail(String email) {
-      return findUserByEmail(email);
+    public UserDTO getUserByEmail(String email) {
+
+        User user = findUserByEmail(email);
+        //refactor
+        UserDTO userDto = UserDTO.builder()
+                .lastName(user.getLastName())
+                .firstName(user.getFirstName())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .build();
+      return userDto;
      }
 
     @Override
-    public void insertUser(User user) {
+    public void insertUser(CreateUserRequest userRequest) {
+        //refactor
+        User user = User.builder()
+                .lastName(userRequest.getLastName())
+                .firstName(userRequest.getFirstName())
+                .username(userRequest.getUsername())
+                .email(userRequest.getEmail())
+                .build();
+
         userRepository.save(user);
     }
 
