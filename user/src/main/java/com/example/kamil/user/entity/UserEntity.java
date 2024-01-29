@@ -14,6 +14,7 @@ import lombok.ToString;
 @ToString
 public class UserEntity  {
 
+
 	
 	@Id
 	private String username;
@@ -23,4 +24,5 @@ public class UserEntity  {
 	private String email;
 	
 	
+
 }
