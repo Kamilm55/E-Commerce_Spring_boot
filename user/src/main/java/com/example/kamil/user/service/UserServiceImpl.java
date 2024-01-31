@@ -8,6 +8,7 @@ import com.example.kamil.user.payload.CreateUserRequest;
 import com.example.kamil.user.repository.UserRepository;
 import com.example.kamil.user.utils.converter.UserDTOConverter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
@@ -45,7 +47,7 @@ public class UserServiceImpl implements UserService{
     public List<UserDTO> getActiveUsers() {
         return userRepository.findAll()
                 .stream()
-                .filter(user -> user.isActive())
+                .filter(user -> user.getIsActive())
                 .map(user -> UserDTOConverter.convert(user))
                 .collect(Collectors.toList());
     }
@@ -71,7 +73,8 @@ public class UserServiceImpl implements UserService{
     public UserDTO updateUser(String email, CreateUserRequest userRequest) {
         User user = findUserByEmail(email);
 
-        if(!user.isActive()){
+        if(!user.getIsActive()){
+            log.warn(String.format("User with email: %s is not active!",email));
             throw new UserIsNotActiveException();
         }
 
@@ -106,7 +109,7 @@ public class UserServiceImpl implements UserService{
     }
     private void changeStatusOfUser(String email,boolean status){
         User user = findUserByEmail(email);
-        user.setActive(status);
+        user.setIsActive(status);
         userRepository.save(user);
     }
     private User findUserByEmail(String email){
