@@ -10,7 +10,8 @@ public interface UserService {
     UserDTO getUserByEmail(String email);
     void insertUser(CreateUserRequest userRequest);
     List<User> getAll();
-    boolean deleteUser(String email);
-    void deactivateUser();
+    void deleteUser(String email);
+    void deactivateUser(String email);
+    void activateUser(String email);
 
 }

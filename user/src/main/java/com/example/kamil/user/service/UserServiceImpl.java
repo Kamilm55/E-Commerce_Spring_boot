@@ -2,6 +2,7 @@ package com.example.kamil.user.service;
 
 import com.example.kamil.user.dto.UserDTO;
 import com.example.kamil.user.entity.User;
+import com.example.kamil.user.exception.UserNotFoundException;
 import com.example.kamil.user.payload.CreateUserRequest;
 import com.example.kamil.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,6 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public UserDTO getUserByEmail(String email) {
-
         User user = findUserByEmail(email);
         //refactor
         UserDTO userDto = UserDTO.builder()
@@ -37,6 +37,7 @@ public class UserServiceImpl implements UserService{
                 .firstName(userRequest.getFirstName())
                 .username(userRequest.getUsername())
                 .email(userRequest.getEmail())
+                .isActive(true)
                 .build();
 
         userRepository.save(user);
@@ -48,20 +49,30 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public boolean deleteUser(String email) {
+    public void deleteUser(String email) {
         User user = findUserByEmail(email);
 
         userRepository.deleteById(user.getId());
-        return  true;
     }
 
     @Override
-    public void deactivateUser() {
-    /// deactivate user
+    public void deactivateUser(String email) {
+        User user = findUserByEmail(email);
+        user.setActive(false);
+        userRepository.save(user);
+    }
+
+    @Override
+    public void activateUser(String email) {
+        User user = findUserByEmail(email);
+        user.setActive(true);
+        userRepository.save(user);
     }
 
     // Util methods
+    //refactor
     private User findUserByEmail(String email){
-        return userRepository.findByEmail(email).orElseThrow(()-> new RuntimeException("User not found with this email: " + email));
+        return userRepository.findByEmail(email).orElseThrow(()-> new UserNotFoundException("User not found with this email: " + email));
     }
+
 }

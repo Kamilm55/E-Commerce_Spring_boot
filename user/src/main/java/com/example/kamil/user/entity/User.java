@@ -22,9 +22,8 @@ public class User  {
 	//private String password;
 	private String firstName;
 	private String lastName;
+	private boolean isActive;
 
-
-	
-	
 
 }
+
