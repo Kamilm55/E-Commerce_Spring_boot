@@ -9,9 +9,11 @@ import java.util.List;
 public interface UserService {
     UserDTO getUserByEmail(String email);
     void insertUser(CreateUserRequest userRequest);
-    List<User> getAll();
+    List<UserDTO> getAll();
+    List<UserDTO> getActiveUsers();
     void deleteUser(String email);
     void deactivateUser(String email);
     void activateUser(String email);
+    UserDTO updateUser(String email , CreateUserRequest userRequest);
 
 }

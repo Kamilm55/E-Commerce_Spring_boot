@@ -1,4 +1,4 @@
-package com.example.kamil.user.exception;
+package com.example.kamil.user.exception.customExceptions;
 
 import lombok.Getter;
 import org.springframework.validation.BindingResult;
