@@ -4,7 +4,7 @@ import com.example.kamil.user.dto.UserDTO;
 import com.example.kamil.user.entity.User;
 import com.example.kamil.user.exception.customExceptions.UserIsNotActiveException;
 import com.example.kamil.user.exception.customExceptions.UserNotFoundException;
-import com.example.kamil.user.payload.CreateUserRequest;
+import com.example.kamil.user.payload.UserRequest;
 import com.example.kamil.user.repository.UserRepository;
 import com.example.kamil.user.utils.converter.UserDTOConverter;
 import lombok.RequiredArgsConstructor;
@@ -29,10 +29,10 @@ public class UserServiceImpl implements UserService{
      }
 
     @Override
-    public void insertUser(CreateUserRequest userRequest) {
+    public UserDTO insertUser(UserRequest userRequest) {
         User user = populateUser(userRequest);
 
-        userRepository.save(user);
+        return UserDTOConverter.convert( userRepository.save(user));
     }
 
     @Override
@@ -70,7 +70,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserDTO updateUser(String email, CreateUserRequest userRequest) {
+    public UserDTO updateUser(String email, UserRequest userRequest) {
         User user = findUserByEmail(email);
 
         if(!user.getIsActive()){
@@ -87,16 +87,16 @@ public class UserServiceImpl implements UserService{
 
     // Util methods
 
-    private User populateUser(CreateUserRequest userRequest){
+    private User populateUser(UserRequest userRequest){
         return User.builder()
                 .lastName(userRequest.getLastName())
                 .firstName(userRequest.getFirstName())
                 .username(userRequest.getUsername())
                 .email(userRequest.getEmail())
-                .isActive(true)
+                .isActive(false)
                 .build();
     }
-    private void updateUserData(User user, CreateUserRequest userRequest) {
+    private void updateUserData(User user, UserRequest userRequest) {
         user.setEmail(userRequest.getEmail());
         user.setUsername(userRequest.getUsername());
         user.setFirstName(userRequest.getFirstName());

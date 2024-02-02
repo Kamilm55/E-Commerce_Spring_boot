@@ -1,6 +1,5 @@
 package com.example.kamil.user.payload;
 
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CreateUserRequest {
+public class UserRequest {
     private String username;
     private String email;
 

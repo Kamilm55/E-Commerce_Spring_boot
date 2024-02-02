@@ -1,11 +1,9 @@
 package com.example.kamil.user.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
+//@EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

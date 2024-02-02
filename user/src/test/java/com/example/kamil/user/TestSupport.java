@@ -9,12 +9,12 @@ import java.util.stream.IntStream;
 
 public class TestSupport {
 
-    public static User generateUser(){
+    public static User generateUser(String mail){
         return User.builder()
                 .id(1L)
                 .firstName("first")
                 .lastName("last")
-                .email("email")
+                .email(mail)
                 .username("username")
                 .isActive(true)
                 .build();

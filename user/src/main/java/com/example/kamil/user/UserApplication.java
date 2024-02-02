@@ -1,16 +1,10 @@
 package com.example.kamil.user;
 
-import com.example.kamil.user.entity.User;
-import com.example.kamil.user.payload.CreateUserRequest;
 import com.example.kamil.user.service.UserService;
-import com.example.kamil.user.utils.converter.UserDTOConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
-
-import java.util.stream.Collectors;
 
 @SpringBootApplication
 @RequiredArgsConstructor
