@@ -3,26 +3,30 @@ package com.example.kamil.user.service;
 import com.example.kamil.user.TestSupport;
 import com.example.kamil.user.dto.UserDTO;
 import com.example.kamil.user.entity.User;
+import com.example.kamil.user.exception.customExceptions.UserIsNotActiveException;
 import com.example.kamil.user.exception.customExceptions.UserNotFoundException;
 import com.example.kamil.user.payload.UserRequest;
 import com.example.kamil.user.repository.UserRepository;
 import com.example.kamil.user.utils.converter.UserDTOConverter;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Slf4j
 public class UserServiceTest extends TestSupport {
     //Learn:
     // In JUnit and many other unit testing frameworks, the common structure of a test is often based on the Arrange-Act-Assert (AAA) pattern.
 
+    // Learn:
+    //  assertEquals(expectedValue, actualValue) actualValue from service
     private UserRepository userRepository;
     private UserDTOConverter userDTOConverter;
 
@@ -39,7 +43,6 @@ public class UserServiceTest extends TestSupport {
 
         userService = new UserServiceImpl(userRepository);
     }
-    // Learn:  assertEquals(expectedValue, actualValue) actualValue from service
 
     @Test
     public void testGetAll_itShouldReturnUserDtoList(){
@@ -47,7 +50,7 @@ public class UserServiceTest extends TestSupport {
 
         //  1.Preparation
         List<User> users = generateUserList();
-        List<UserDTO> userDTOList = generateUserDtoList();
+        List<UserDTO> userDTOList = generateUserDtoList(users);
 
         //User user = generateUser();
 
@@ -70,7 +73,37 @@ public class UserServiceTest extends TestSupport {
 
     }
 
+    @Test
+    public void testGetActiveUsers_itShouldReturnUserDtoList(){
+        //todo: how to mock static method in junit 5 , mockito
 
+        //  1.Preparation
+        List<User> users = generateUserList();
+
+        List<User> userListOnlyActive = users.stream()
+                .filter(User::getIsActive)
+                .collect(Collectors.toList());
+
+        List<UserDTO> userDTOListOnlyActive = generateUserDtoList(userListOnlyActive);
+
+        //User user = generateUser();
+
+        // Define the behavior of the mock
+        // 2.Condition
+        when(userRepository.findAll()).thenReturn(users);
+
+        // 3.Service call
+        List<UserDTO> result = userService.getActiveUsers();
+
+        // 4.Equality
+        // Assert: Validate the results
+        //    assertEquals(expectedValue, actualValue) actualValue from service
+        assertEquals(userDTOListOnlyActive , result);
+
+        // verifications
+        verify(userRepository).findAll();
+
+    }
     @Test
     public void testGetUserByEmail_whenUserMailExists_itShouldReturnUserDTO(){
         // A-A-A Arrange-Act-Assert
@@ -135,6 +168,255 @@ public class UserServiceTest extends TestSupport {
         assertEquals(userDTO,result);
 
         verify(userRepository).save(user);
+    }
+
+    // Update method tests 3 cases
+    @Test
+    public void testUpdateUser_whenUserMailDoesExistAndIsActive_itShouldReturnUpdatedUserDto(){
+        // A-A-A Arrange-Act-Assert
+        // Arrange:
+        String mail = "user@gmail.com";
+        UserRequest userRequest = UserRequest.builder().email(mail).firstName("first").lastName("l").username("user").build();
+        // before save
+        User user = User.builder().email(mail).firstName("first").lastName("l").username("user").isActive(true).build();
+//
+//        User updateUser = User.builder()
+//                .id(1L)
+//                .email(mail).firstName("first").lastName("l").username("user").isActive(true).build();
+        // after save
+        User savedUser = User.builder()
+                .id(1L)
+                .email(mail).firstName("first").lastName("l").username("user").isActive(true).build();
+
+        UserDTO userDTO = generateUserDto(user);
+
+        // condition:
+        when(userRepository.findByEmail(mail)).thenReturn(Optional.of(user));
+        when(userRepository.save(user)).thenReturn(savedUser);
+
+        // Act:
+        UserDTO result = userService.updateUser(mail,userRequest);
+
+        // Assert:
+        assertEquals(userDTO,result);
+
+        verify(userRepository).findByEmail(mail);
+        verify(userRepository).save(user);
+    }
+    @Test
+    public void testUpdateUser_whenUserMailDoesNotExistAndIsActive_itShouldThrowUserNotFoundException(){
+        // A-A-A Arrange-Act-Assert
+        // Arrange:
+        String mail = "user@gmail.com";
+        UserRequest userRequest = UserRequest.builder().email(mail).firstName("first").lastName("l").username("user").build();
+        // before save
+        User user = User.builder().email(mail).firstName("first").lastName("l").username("user").isActive(true).build();
+//
+//        User updateUser = User.builder()
+//                .id(1L)
+//                .email(mail).firstName("first").lastName("l").username("user").isActive(true).build();
+        // after save
+        User savedUser = User.builder()
+                .id(1L)
+                .email(mail).firstName("first").lastName("l").username("user").isActive(true).build();
+
+       // UserDTO userDTO = generateUserDto(user);
+
+        // condition:
+        when(userRepository.findByEmail(mail)).thenReturn(Optional.empty());
+       // when(userRepository.save(user)).thenReturn(savedUser);
+
+        // Assert:
+        assertThrows(UserNotFoundException.class , () -> {
+            // Act:
+            userService.updateUser(mail,userRequest);
+        });
+
+
+        verify(userRepository).findByEmail(mail);
+        verifyNoMoreInteractions(userRepository);
+      //  verify(userRepository).save(user);
+    }
+
+    @Test
+    public void testUpdateUser_whenUserMailExistsButUserIsNotActive_itShouldThrowUserIsNotActiveException(){
+        // A-A-A Arrange-Act-Assert
+        // Arrange:
+        String mail = "user@gmail.com";
+        UserRequest userRequest = UserRequest.builder().email(mail).firstName("first").lastName("l").username("user").build();
+        // before save
+        User user = User.builder().email(mail).firstName("first").lastName("l").username("user").isActive(false).build();
+//
+//        User updateUser = User.builder()
+//                .id(1L)
+//                .email(mail).firstName("first").lastName("l").username("user").isActive(false).build();
+        // after save
+        User savedUser = User.builder()
+                .id(1L)
+                .email(mail).firstName("first").lastName("l").username("user").isActive(false).build();
+
+        // UserDTO userDTO = generateUserDto(user);
+
+        // condition:
+        when(userRepository.findByEmail(mail)).thenReturn(Optional.of(user));
+        when(userRepository.save(user)).thenReturn(savedUser);
+
+        // Assert:
+        assertThrows(UserIsNotActiveException.class , () -> {
+            // Act:
+            userService.updateUser(mail,userRequest);
+        });
+
+
+        verify(userRepository).findByEmail(mail);
+        verifyNoMoreInteractions(userRepository);
+        // verify(userRepository).save(user);
+    }
+    // Deactivate method tests 2 cases
+    @Test
+    public void testDeactivateUser_whenUserMailExists_itShouldUpdateUserByActive(){
+        // A-A-A Arrange-Act-Assert
+        // Arrange:
+        String mail = "user@gmail.com";
+        // before save
+        User user = User.builder().email(mail).firstName("first").lastName("l").username("user").isActive(true).build();
+
+        // after save : it's status should change to false
+        User savedUser = User.builder()
+                .email(mail).firstName("first").lastName("l").username("user").isActive(false).build();
+
+
+        // condition:
+        when(userRepository.findByEmail(mail)).thenReturn(Optional.of(user));
+
+        log.info("user:" + user);
+        log.info("Saved user:" + savedUser);
+
+        log.info("****");
+        // Act:
+         userService.deactivateUser(mail);
+
+        log.info("user:" + user);
+        log.info("Saved user:" + savedUser);
+
+        log.info("Saved user equals user? " + user.equals(savedUser));
+
+         // There is no assertion for void methods , we must verify
+        verify(userRepository).findByEmail(mail);
+        verify(userRepository).save(savedUser); // (not user) -> (after deactivate method with the help of setActive() , user equals savedUser , therefore it can be user)
+
+        // user with isActive of true
+//        User userActive = User.builder().email(mail).firstName("first").lastName("l").username("user").isActive(true).build();
+//        verify(userRepository).save(userActive);  // Learn: Test fails in this case
+
+    }
+    @Test
+    public void testDeactivateUser_whenUserMailDoesNotExist_itShouldThrowUserNotFoundException(){
+        // Arrange:
+        String mail = "user@gmail.com";
+
+        // condition:
+        when(userRepository.findByEmail(mail)).thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class , () -> {
+            // Act:
+            userService.deactivateUser(mail);
+        });
+
+        verify(userRepository).findByEmail(mail);
+        verifyNoMoreInteractions(userRepository);
+    }
+
+    @Test
+    public void testActivateUser_whenUserMailExists_itShouldUpdateUserByActive(){
+        // A-A-A Arrange-Act-Assert
+        // Arrange:
+        String mail = "user@gmail.com";
+        // before save
+        User user = User.builder().email(mail).firstName("first").lastName("l").username("user").isActive(false).build();
+
+        // after save : it's status should change to false
+        User savedUser = User.builder()
+                .email(mail).firstName("first").lastName("l").username("user").isActive(true).build();
+
+
+        // condition:
+        when(userRepository.findByEmail(mail)).thenReturn(Optional.of(user));
+
+        log.info("user:" + user);
+        log.info("Saved user:" + savedUser);
+
+        log.info("****");
+        // Act:
+        userService.activateUser(mail);
+
+        log.info("user:" + user);
+        log.info("Saved user:" + savedUser);
+
+        log.info("Saved user equals user? " + user.equals(savedUser));
+
+        // There is no assertion for void methods , we must verify
+        verify(userRepository).findByEmail(mail);
+        verify(userRepository).save(savedUser); // (not user) -> (after deactivate method with the help of setActive() , user equals savedUser , therefore it can be user)
+
+        // user with isActive of false
+//        User userActive = User.builder().email(mail).firstName("first").lastName("l").username("user").isActive(false).build();
+//        verify(userRepository).save(userActive);  // Learn: Test fails in this case
+
+    }
+
+    @Test
+    public void testActivateUser_whenUserMailDoesNotExist_itShouldThrowUserNotFoundException(){
+        // Arrange:
+        String mail = "user@gmail.com";
+
+        // condition:
+        when(userRepository.findByEmail(mail)).thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class , () -> {
+            // Act:
+            userService.activateUser(mail);
+        });
+
+        verify(userRepository).findByEmail(mail);
+        verifyNoMoreInteractions(userRepository);
+    }
+
+
+    @Test
+    public void testDeleteUser_whenUserMailExists_itShouldDeleteUser(){
+        // Arrange:
+        String mail = "user@gmail.com";
+        // before save
+        User user = User.builder().email(mail).firstName("first").lastName("l").username("user").isActive(false).build();
+
+        // condition:
+        when(userRepository.findByEmail(mail)).thenReturn(Optional.of(user));
+
+        // Act:
+        userService.deleteUser(mail);
+
+        // There is no assertion for void methods , we must verify
+        verify(userRepository).findByEmail(mail);
+        verify(userRepository).deleteById(user.getId());
+        verifyNoMoreInteractions(userRepository);
+    }
+
+    @Test
+    public void testDeleteUser_whenUserMailDoesNotExist_itShouldThrowUserNotFoundException(){
+        // Arrange:
+        String mail = "user@gmail.com";
+
+        // condition:
+        when(userRepository.findByEmail(mail)).thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class , () -> {
+            // Act:
+            userService.deleteUser(mail);
+        });
+
+        verify(userRepository).findByEmail(mail);
+        verifyNoMoreInteractions(userRepository);
     }
 
 }

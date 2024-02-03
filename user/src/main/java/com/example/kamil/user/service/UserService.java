@@ -7,12 +7,12 @@ import java.util.List;
 
 public interface UserService {
     List<UserDTO> getAll();
+    List<UserDTO> getActiveUsers();
     UserDTO getUserByEmail(String email);
     UserDTO insertUser(UserRequest userRequest);
     UserDTO updateUser(String email , UserRequest userRequest);
-    List<UserDTO> getActiveUsers();
-    void deleteUser(String email);
     void deactivateUser(String email);
     void activateUser(String email);
+    void deleteUser(String email);
 
 }

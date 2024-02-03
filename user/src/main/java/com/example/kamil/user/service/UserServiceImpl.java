@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService{
 
         updateUserData(user,userRequest); // not save only set
 
-        User updatedUser = saveAndRetrieveUser(user);
+        User updatedUser = userRepository.save(user);;
 
         return UserDTOConverter.convert(updatedUser);
     }
@@ -101,11 +101,6 @@ public class UserServiceImpl implements UserService{
         user.setUsername(userRequest.getUsername());
         user.setFirstName(userRequest.getFirstName());
         user.setLastName(userRequest.getLastName());
-    }
-    private User saveAndRetrieveUser(User user) {
-        userRepository.save(user);
-        // Fetch the updated user from the database to ensure data consistency
-        return findUserByEmail(user.getEmail());
     }
     private void changeStatusOfUser(String email,boolean status){
         User user = findUserByEmail(email);
