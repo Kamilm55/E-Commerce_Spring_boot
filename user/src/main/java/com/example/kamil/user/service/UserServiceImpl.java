@@ -30,6 +30,17 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public UserDTO insertUser(UserRequest userRequest) {
+        //refactorThis:
+
+        if (userRepository.existsByEmail(userRequest.getEmail())) {
+            throw new RuntimeException("It has already user with email:" + userRequest.getEmail());
+        }
+        else if(userRepository.existsByUsername(userRequest.getUsername())){
+            throw new RuntimeException("It has already user with username:" + userRequest.getUsername());
+        }
+
+
+        ///
         User user = populateUser(userRequest);
 
         return UserDTOConverter.convert( userRepository.save(user));

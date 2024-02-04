@@ -19,6 +19,7 @@
 	<name>user</name>
 	<description>user</description>
 	<properties>
+		<maven.assembly.plugin.version>2.4</maven.assembly.plugin.version>
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>
@@ -42,13 +43,6 @@
 
 	</dependencies>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
+
 
 </project>
