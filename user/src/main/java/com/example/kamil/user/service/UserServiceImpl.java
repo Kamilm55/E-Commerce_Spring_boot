@@ -48,7 +48,8 @@ public class UserServiceImpl implements UserService{
             throw new UserIsNotActiveException();
         }
 
-        validateUniquenessOfEmailAndUsername(userRequest);
+        log.info(String.valueOf(userFromDB));
+        validateForUpdate(userFromDB,userRequest);
 
         User updatedUserData = updateUserData(userFromDB, userRequest);// not save only set
 
@@ -56,8 +57,6 @@ public class UserServiceImpl implements UserService{
 
         return UserDTOConverter.convert(updatedUser);
     }
-
-
 
     @Override
     public List<UserDTO> getAll() {
@@ -95,46 +94,31 @@ public class UserServiceImpl implements UserService{
 
 
     // Util methods
+    private void validateForUpdate(User currentUser, UserRequest userRequest) {
+        String emailFromRequest = userRequest.getEmail();
+        String usernameFromRequest = userRequest.getUsername();
+
+        if(!currentUser.getEmail().equals(emailFromRequest)){
+            ifExistsByEmailThrowException(emailFromRequest);
+        }
+        else if (!currentUser.getUsername().equals(usernameFromRequest)) {
+            ifExistsByUsernameThrowException(usernameFromRequest);
+        }
+
+    }
 
     private void validateUniquenessOfEmailAndUsername(UserRequest userRequest) {
-        String email = userRequest.getEmail();
-        String username = userRequest.getUsername();
+       ifExistsByEmailThrowException(userRequest.getEmail());
+       ifExistsByUsernameThrowException(userRequest.getUsername());
+    }
+    private void ifExistsByUsernameThrowException(String username) {
+        if(userRepository.existsByUsername(username))
+            throw new UserIsAlreadyExistsWithThisUsernameException(username);
+    }
 
-        // Learn:
-        //  For update method we must check existing user
-        //  It can be unmodified fields but it throws exception
-        //  existingUser == null -> insert method
-        //  !existingUser.getEmail().equals(email) -> update method
-
-        // Retrieve the existing user from the database
-        User existingUser = userRepository.findByEmail(email).orElse(null);
-
-        //todo: for update it throw error 500 but it must throw UserIsAlreadyExistsWithThisEmail
-
-
-        log.warn("before email check ");
-        System.out.println();
-
-        log.info("email: " + email);
-        if(existingUser != null){
-            log.info("existingUser.getEmail(): " + existingUser.getEmail());
-             log.info("email is equal to existingUser.getEmail()"+existingUser.getEmail().equals(email));
-        }
-
-                // Check for email uniqueness only if the email is being changed
-        if (existingUser == null || !existingUser.getEmail().equals(email)) {
-            log.warn("email inside");
-            if (userRepository.existsByEmail(email)) {
-                throw new UserIsAlreadyExistsWithThisEmailException(email);
-            }
-        }
-
-        // Check for username uniqueness only if the username is being changed
-        if (existingUser == null || !existingUser.getUsername().equals(username)) {
-            if (userRepository.existsByUsername(username)) {
-                throw new UserIsAlreadyExistsWithThisUsernameException(username);
-            }
-        }
+    private void ifExistsByEmailThrowException(String email) {
+        if(userRepository.existsByEmail(email))
+            throw new UserIsAlreadyExistsWithThisEmailException(email);
     }
     private User populateUser(UserRequest userRequest){
         return User.builder()
