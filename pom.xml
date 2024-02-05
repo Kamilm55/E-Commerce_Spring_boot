@@ -72,12 +72,13 @@
 		</plugins>
 	</build>-->
 
-	<!-- Add this block to E-Commerce/pom.xml -->
+	<!-- Add this block to (root) E-Commerce/pom.xml -->
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+
 				<executions>
 					<execution>
 						<goals>
@@ -85,16 +86,16 @@
 						</goals>
 					</execution>
 				</executions>
+
 				<configuration>
 					<finalName>E-Commerce-main-and-user</finalName>
 					<attach>false</attach>
 					<classifier>main-and-user</classifier>
 				</configuration>
+
 			</plugin>
 		</plugins>
 	</build>
-
-
 
 
 	<modules>

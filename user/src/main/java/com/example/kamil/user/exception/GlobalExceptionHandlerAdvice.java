@@ -1,5 +1,7 @@
 package com.example.kamil.user.exception;
 
+import com.example.kamil.user.exception.customExceptions.UserIsAlreadyExistsWithThisEmailException;
+import com.example.kamil.user.exception.customExceptions.UserIsAlreadyExistsWithThisUsernameException;
 import com.example.kamil.user.exception.customExceptions.UserIsNotActiveException;
 import com.example.kamil.user.exception.customExceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -18,7 +20,16 @@ public class GlobalExceptionHandlerAdvice {
     public ResponseEntity<?> handleUserIsNotActiveException(UserIsNotActiveException exception){
         return new ResponseEntity<>(exception.getMessage(),HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(value = UserIsAlreadyExistsWithThisEmailException.class)
+    public ResponseEntity<?> handleUserIsAlreadyExistsWithThisEmail(UserIsAlreadyExistsWithThisEmailException exception){
+        return new ResponseEntity<>(exception.getMessage(),HttpStatus.CONFLICT);
+    }
+    @ExceptionHandler(value = UserIsAlreadyExistsWithThisUsernameException.class)
+    public ResponseEntity<?> handleUserIsAlreadyExistsWithThisUsername(UserIsAlreadyExistsWithThisUsernameException exception){
+        return new ResponseEntity<>(exception.getMessage(),HttpStatus.CONFLICT);
+    }
 
+    // For unhandled exceptions:
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<?> generalExceptionHandler(Exception exception){
         return new ResponseEntity<>(exception.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
