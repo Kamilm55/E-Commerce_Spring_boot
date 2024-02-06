@@ -21,8 +21,8 @@ jobs:
 
       - name: Build and Test Modules
         run: |
-          chmod +x mvnw
-          ./mvnw clean install
+          chmod +x mvn
+          ./mvn clean install
 
       - name: Archive Artifacts
         uses: actions/upload-artifact@v2
