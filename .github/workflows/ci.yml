@@ -41,7 +41,7 @@ jobs:
         with:
             image: kamil571/e-commerce_spring_boot_app
             tags: v1, latest
-            registry: registry-url.io
+            registry: docker.io
             dockerfile: Dockerfile
             username: ${{ secrets.DOCKER_USERNAME }}
             password: ${{ secrets.DOCKER_PASSWORD }}
