@@ -1,0 +1,21 @@
+name: CI/CD for Multi-Module Spring Boot Project
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Build and Test Modules
+      run: |
+        # Ensure the mvnw script is present in your repository
+        # If not, you might need to commit it to your version control system
+        chmod +x mvnw  # Set execution permissions
+        ./mvnw clean install
