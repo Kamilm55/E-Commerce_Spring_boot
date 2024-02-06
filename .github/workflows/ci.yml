@@ -37,8 +37,8 @@ jobs:
           file: ./main/Dockerfile  # Specify the path to your Dockerfile
           push: true
           tags: |
-            docker push kamil571/e-commerce_spring_boot_app:latest
-            docker push kamil571/e-commerce_spring_boot_app:${{ github.sha }}
+            kamil571/e-commerce_spring_boot_app:latest
+            kamil571/e-commerce_spring_boot_app:${{ github.sha }}
 
           # Optionally, you can authenticate with your Docker registry
           username: ${{ secrets.DOCKER_USERNAME }}
