@@ -5,7 +5,7 @@ FROM openjdk:17-jdk-alpine
 WORKDIR /app
 
 # Copy the JAR file from the build artifacts
-COPY ./main/target/E-commerce.jar app.jar
+COPY main/target/E-commerce.jar app.jar
 
 # Expose the port your application runs on
 EXPOSE 8080

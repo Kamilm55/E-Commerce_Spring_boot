@@ -33,7 +33,7 @@ jobs:
       - name: Build Docker Image
         uses: docker/build-push-action@v2
         with:
-          context: .  # Set the build context to the root of your repository
+          context: ./main/target  # Set the build context to the root of your repository
           file: ./Dockerfile  # Specify the path to your Dockerfile
           push: true
           tags: |
