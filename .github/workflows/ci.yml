@@ -1,4 +1,4 @@
-name: CI/CD for Multi-Module Spring Boot Project
+name: Build and Test Multi-Module Spring Boot Project
 
 on:
   push:
@@ -8,11 +8,15 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2.5.0  # Replace with the latest version that supports Node.js 20
 
+      - name: Set up JDK 20
+        uses: actions/setup-java@v2
+        with:
+          java-version: 20
 
       - name: Build and Test Modules
         run: |
