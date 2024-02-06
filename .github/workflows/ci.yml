@@ -21,11 +21,11 @@ jobs:
 
       - name: Build and Test Modules
         run: |
-          chmod +x mvn
-          ./mvn clean install
+          chmod +x mvnw
+          ./mvnw clean install
 
       - name: Archive Artifacts
         uses: actions/upload-artifact@v2
         with:
           name: my-latest-artifact
-          path: ./target  # Adjust the path based on your project structure
+          path: ~/path/to/target  # Adjust the path based on your project structure
