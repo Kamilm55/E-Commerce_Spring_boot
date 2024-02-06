@@ -14,8 +14,8 @@ public class TestController {
         return ResponseEntity.ok("test works");
     }
 
-    @GetMapping("/2")
-    public ResponseEntity<String> test2(){
-        return ResponseEntity.ok("test 2 works");
-    }
+//    @GetMapping("/2")
+//    public ResponseEntity<String> test2(){
+//        return ResponseEntity.ok("test 2 works");
+//    }
 }

@@ -10,12 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2
+      - name: Checkout Repository
+        uses: actions/checkout@v2.5.0  # Replace with the latest version that supports Node.js 20
 
-    - name: Build and Test Modules
-      run: |
-        # Ensure the mvnw script is present in your repository
-        # If not, you might need to commit it to your version control system
-        chmod +x mvnw  # Set execution permissions
-        ./mvnw clean install
+
+      - name: Build and Test Modules
+        run: |
+          # Ensure the mvnw script is present in your repository
+          # If not, you might need to commit it to your version control system
+          chmod +x mvnw  # Set execution permissions
+          ./mvnw clean install
