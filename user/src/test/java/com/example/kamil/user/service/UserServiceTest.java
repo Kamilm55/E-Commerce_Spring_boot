@@ -162,7 +162,6 @@ public class UserServiceTest extends TestSupport {
 
         // condition:
         when(userRepository.save(user)).thenReturn(savedUser);
-        when(userRepository.findByEmail(mail)).thenReturn(Optional.ofNullable(null));
 
         when(userRepository.existsByEmail(mail)).thenReturn(false);
         when(userRepository.existsByUsername(mail)).thenReturn(false);
@@ -174,7 +173,6 @@ public class UserServiceTest extends TestSupport {
         assertEquals(userDTO,result);
 
         verify(userRepository).save(user);
-        verify(userRepository).findByEmail(mail);
     }
 
     @Test
@@ -185,15 +183,12 @@ public class UserServiceTest extends TestSupport {
         UserRequest userRequest = UserRequest.builder().email(mail).firstName("first").lastName("l").username("user").build();
 
         // condition:
-        when(userRepository.findByEmail(mail)).thenReturn(Optional.ofNullable(null));
         when(userRepository.existsByEmail(mail)).thenReturn(true);
 
         assertThrows(UserIsAlreadyExistsWithThisEmailException.class , () ->{
             userService.insertUser(userRequest);
         });
 
-
-        verify(userRepository).findByEmail(mail);
         verify(userRepository).existsByEmail(mail);
     }
     @Test
@@ -204,16 +199,13 @@ public class UserServiceTest extends TestSupport {
         UserRequest userRequest = UserRequest.builder().email(mail).firstName("first").lastName("l").username("user").build();
 
         // condition:
-        when(userRepository.findByEmail(mail)).thenReturn(Optional.ofNullable(null));
-
         when(userRepository.existsByEmail(mail)).thenReturn(false);
         when(userRepository.existsByUsername(userRequest.getUsername())).thenReturn(true);
 
         assertThrows(UserIsAlreadyExistsWithThisUsernameException.class , () ->{
             userService.insertUser(userRequest);
         });
-
-        verify(userRepository).findByEmail(mail);
+        verify(userRepository).existsByEmail(mail);
         verify(userRepository).existsByUsername(userRequest.getUsername());
     }
 
@@ -248,7 +240,7 @@ public class UserServiceTest extends TestSupport {
         assertEquals(userDTO,result);
 
         // Verify that findByEmail is called exactly two times with the specified email parameter
-        verify(userRepository, times(2)).findByEmail(mail);
+        verify(userRepository).findByEmail(mail);
         verify(userRepository).save(user);
     }
     @Test
@@ -322,14 +314,15 @@ public class UserServiceTest extends TestSupport {
     }
 
     @Test
-    public void testUpdateUser_whenUserMailExistsAndUserIsActiveButUserIsAlreadyExistsWithEmail_itShouldThrowUserIsAlreadyExistsWithThisEmailException(){
+    public void testUpdateUser_whenUserMailExistsAndUserIsActiveButOtherUserIsAlreadyExistsWithEmail_itShouldThrowUserIsAlreadyExistsWithThisEmailException(){
         // Arrange:
         String mail = "user@gmail.com";
         UserRequest userRequest = UserRequest.builder().email(mail).firstName("reqF").lastName("reqL").username("reqUser").build();
 
         User savedUser = User.builder()
                 .id(1L)
-                .email(mail).firstName("first").lastName("l").username("user").isActive(true).build();
+                .email("different mail").firstName("first").lastName("l").username("user").isActive(true).build();
+
 
 
         // condition:
@@ -337,6 +330,7 @@ public class UserServiceTest extends TestSupport {
         // Set up the mock to return Optional.of(user) for the first invocation
         when(userRepository.findByEmail(mail)).thenReturn(Optional.of(savedUser));
         when(userRepository.existsByEmail(mail)).thenReturn(true);
+       // when(userRepository.save(savedUser)).thenReturn(updatedUser);
 
         // Assert:
         assertThrows(UserIsAlreadyExistsWithThisEmailException.class , () -> {
@@ -345,8 +339,36 @@ public class UserServiceTest extends TestSupport {
         });
 
 
-//        verify(userRepository ).findByEmail(mail);
-//        verify(userRepository).existsByEmail(mail);
+        verify(userRepository ).findByEmail(mail);
+        verify(userRepository).existsByEmail(mail);
+    }
+    @Test
+    public void testUpdateUser_whenUserMailExistsAndUserIsActiveButOtherUserIsAlreadyExistsWithUsername_itShouldThrowUserIsAlreadyExistsWithThisUsernameException(){
+        // Arrange:
+        String mail = "user@gmail.com";
+        UserRequest userRequest = UserRequest.builder().email(mail).firstName("reqF").lastName("reqL").username("reqUser").build();
+
+        User savedUser = User.builder()
+                .id(1L)
+                .email(mail).firstName("first").lastName("l").username("diff user").isActive(true).build();
+
+
+        // condition:
+
+        // Set up the mock to return Optional.of(user) for the first invocation
+        when(userRepository.findByEmail(mail)).thenReturn(Optional.of(savedUser));
+        when(userRepository.existsByEmail(mail)).thenReturn(false);
+        when(userRepository.existsByUsername(userRequest.getUsername())).thenReturn(true);
+
+        // Assert:
+        assertThrows(UserIsAlreadyExistsWithThisUsernameException.class , () -> {
+            // Act:
+            userService.updateUser(mail,userRequest);
+        });
+
+
+        verify(userRepository).findByEmail(mail);
+        verify(userRepository).existsByUsername(userRequest.getUsername());
     }
 
     // Deactivate method tests 2 cases

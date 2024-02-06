@@ -48,7 +48,6 @@ public class UserServiceImpl implements UserService{
             throw new UserIsNotActiveException();
         }
 
-        log.info(String.valueOf(userFromDB));
         validateForUpdate(userFromDB,userRequest);
 
         User updatedUserData = updateUserData(userFromDB, userRequest);// not save only set
