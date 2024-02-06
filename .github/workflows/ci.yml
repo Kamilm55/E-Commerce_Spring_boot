@@ -24,6 +24,10 @@ jobs:
           chmod +x mvnw
           ./mvnw clean install
 
+      - name: Print Build Artifact Contents
+        run: |
+            ls -R ./main/target
+
       - name: Archive Artifacts
         uses: actions/upload-artifact@v2
         with:
