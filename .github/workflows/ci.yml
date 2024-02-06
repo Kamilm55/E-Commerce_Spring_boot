@@ -30,16 +30,28 @@ jobs:
           name: my-latest-artifact
           path: ./main/target  # Adjust the path based on your project structure
 
-      - name: Build Docker Image
-        uses: docker/build-push-action@v2
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
         with:
-          context: ./main/target  # Set the build context to the root of your repository
-          file: ./Dockerfile  # Specify the path to your Dockerfile
-          push: true
-          tags: |
-            kamil571/e-commerce_spring_boot_app:latest
-            kamil571/e-commerce_spring_boot_app:${{ github.sha }}
-
-          # Optionally, you can authenticate with your Docker registry
-          username: ${{ secrets.DOCKER_USERNAME }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+            context: .
+            push: true
+            tags: kamil571/e-commerce_spring_boot_app:latest
+#      - name: Build Docker Image
+#        uses: docker/build-push-action@v2
+#        with:
+#          context: .  # Set the build context to the root of your repository
+#          file: ./Dockerfile  # Specify the path to your Dockerfile
+#          push: true
+#          tags: |
+#            kamil571/e-commerce_spring_boot_app:latest
+#            kamil571/e-commerce_spring_boot_app:${{ github.sha }}
+#
+#          # Optionally, you can authenticate with your Docker registry
+#          username: ${{ secrets.DOCKER_USERNAME }}
+#          password: ${{ secrets.DOCKER_PASSWORD }}
