@@ -34,7 +34,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .  # Set the build context to the root of your repository
-          file: ./main/Dockerfile  # Specify the path to your Dockerfile
+          file: ./Dockerfile  # Specify the path to your Dockerfile
           push: true
           tags: |
             kamil571/e-commerce_spring_boot_app:latest
