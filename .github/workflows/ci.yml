@@ -39,7 +39,6 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-            context: .
             push: true
             tags: kamil571/e-commerce_spring_boot_app:latest
 
