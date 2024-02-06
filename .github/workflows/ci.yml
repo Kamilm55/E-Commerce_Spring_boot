@@ -30,4 +30,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
             name: my-latest-artifact
-            path:  ./target  # Adjust the path based on your project structure
+            path: ./uploaded_artifacts  # Adjust the path based on your project structure
