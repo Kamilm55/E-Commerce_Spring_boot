@@ -89,9 +89,9 @@
 				</executions>
 
 				<configuration>
-					<finalName>E-Commerce-main-and-user</finalName>
+					<finalName>E-Commerce</finalName>
 					<attach>false</attach>
-					<classifier>main-and-user</classifier>
+<!--					<classifier>main-and-user</classifier>-->
 				</configuration>
 
 			</plugin>
