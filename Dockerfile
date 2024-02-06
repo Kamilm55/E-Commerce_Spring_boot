@@ -1,5 +1,5 @@
 # Use an OpenJDK runtime as a base image
-FROM adoptopenjdk:20-jre-hotspot
+FROM openjdk:17-jdk-alpine
 
 # Set the working directory
 WORKDIR /app
