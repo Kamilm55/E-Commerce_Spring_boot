@@ -2,6 +2,7 @@ package com.example.kamil.user;
 
 import com.example.kamil.user.model.payload.RegisterPayload;
 import com.example.kamil.user.service.UserService;
+import com.example.kamil.user.utils.PublicPrivateKeyUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -35,6 +36,9 @@ public class UserApplication implements CommandLineRunner {
 						.build()
 		);
 
+		System.out.println(PublicPrivateKeyUtil.getPublicKey());
+		System.out.println();
+		System.out.println(PublicPrivateKeyUtil.getPrivateKey());
 //		userService.getAll()
 //				.stream()
 ////				.filter(user -> user.isActive())

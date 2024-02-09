@@ -28,11 +28,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         System.out.println(user);
 
         //refactorThis: role can be change
-        if(user!=null){
             return new LoggedInUserDetails(user.getEmail(),user.getPassword(),Set.of(Role.ROLE_USER));
-        }else {
-            throw new UsernameNotFoundException("There is no authenticated user with this email");
-        }
 
     }
 }

@@ -1,4 +1,4 @@
-package com.example.kamil.user.util;
+package com.example.kamil.user.utils;
 
 import com.example.kamil.user.model.properties.security.SecurityProperties;
 import lombok.Getter;
