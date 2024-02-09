@@ -2,7 +2,7 @@ package com.example.kamil.user.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.example.kamil.user.entity.User;
+import com.example.kamil.user.model.entity.User;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;

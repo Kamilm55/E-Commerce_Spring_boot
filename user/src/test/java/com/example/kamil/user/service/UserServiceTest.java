@@ -1,18 +1,19 @@
 package com.example.kamil.user.service;
 
 import com.example.kamil.user.TestSupport;
-import com.example.kamil.user.dto.UserDTO;
-import com.example.kamil.user.entity.User;
+import com.example.kamil.user.model.dto.UserDTO;
+import com.example.kamil.user.model.entity.User;
 import com.example.kamil.user.exception.customExceptions.UserIsAlreadyExistsWithThisEmailException;
 import com.example.kamil.user.exception.customExceptions.UserIsNotActiveException;
 import com.example.kamil.user.exception.customExceptions.UserNotFoundException;
 import com.example.kamil.user.exception.customExceptions.UserIsAlreadyExistsWithThisUsernameException;
-import com.example.kamil.user.payload.UserRequest;
+import com.example.kamil.user.model.payload.UserRequest;
 import com.example.kamil.user.repository.UserRepository;
 import com.example.kamil.user.utils.converter.UserDTOConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +34,8 @@ public class UserServiceTest extends TestSupport {
     private UserDTOConverter userDTOConverter;
 
     private UserService userService;
+    private PasswordEncoder passwordEncoder;
+    // TODO: check that it encodes actually password or not
 
     //1.Arrange (Setup):
     @BeforeEach
@@ -42,8 +45,9 @@ public class UserServiceTest extends TestSupport {
         // Create a mock objects for using in when and verify methods
         //userDTOConverter = mock(UserDTOConverter.class);
         userRepository = mock(UserRepository.class);
+        passwordEncoder = mock(PasswordEncoder.class);
 
-        userService = new UserServiceImpl(userRepository);
+        userService = new UserServiceImpl(userRepository,passwordEncoder);
     }
 
     @Test
@@ -150,13 +154,19 @@ public class UserServiceTest extends TestSupport {
         // A-A-A Arrange-Act-Assert
         // Arrange:
         String mail = "user@gmail.com";
-        UserRequest userRequest = UserRequest.builder().email(mail).firstName("first").lastName("l").username("user").build();
+        UserRequest userRequest = UserRequest.builder().email(mail)
+                .password(passwordEncoder.encode("pass"))
+                .firstName("first").lastName("l").username("user").build();
        // before save
-        User user = User.builder().email(mail).firstName("first").lastName("l").username("user").isActive(false).build();
+        User user = User.builder().email(mail)
+                .password(passwordEncoder.encode("pass"))
+                .firstName("first").lastName("l").username("user").isActive(false).build();
        // after save
         User savedUser = User.builder()
                 .id(1L)
-                .email(mail).firstName("first").lastName("l").username("user").isActive(false).build();
+                .email(mail)
+                .password(passwordEncoder.encode("pass"))
+                .firstName("first").lastName("l").username("user").isActive(false).build();
 
         UserDTO userDTO = generateUserDto(user);
 
@@ -215,9 +225,13 @@ public class UserServiceTest extends TestSupport {
         // A-A-A Arrange-Act-Assert
         // Arrange:
         String mail = "user@gmail.com";
-        UserRequest userRequest = UserRequest.builder().email(mail).firstName("first").lastName("l").username("user").build();
+        UserRequest userRequest = UserRequest.builder().email(mail)
+                .password(passwordEncoder.encode("pass"))
+                .firstName("first").lastName("l").username("user").build();
         // before save
-        User user = User.builder().email(mail).firstName("first").lastName("l").username("user").isActive(true).build();
+        User user = User.builder().email(mail)
+                .password(passwordEncoder.encode("pass"))
+                .firstName("first").lastName("l").username("user").isActive(true).build();
 //
 //        User updateUser = User.builder()
 //                .id(1L)
@@ -225,7 +239,9 @@ public class UserServiceTest extends TestSupport {
         // after save
         User savedUser = User.builder()
                 .id(1L)
-                .email(mail).firstName("first").lastName("l").username("user").isActive(true).build();
+                .email(mail)
+                .password(passwordEncoder.encode("pass"))
+                .firstName("first").lastName("l").username("user").isActive(true).build();
 
         UserDTO userDTO = generateUserDto(user);
 

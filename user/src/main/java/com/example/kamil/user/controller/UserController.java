@@ -1,7 +1,7 @@
 package com.example.kamil.user.controller;
 
-import com.example.kamil.user.dto.UserDTO;
-import com.example.kamil.user.payload.UserRequest;
+import com.example.kamil.user.model.dto.UserDTO;
+import com.example.kamil.user.model.payload.UserRequest;
 import com.example.kamil.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

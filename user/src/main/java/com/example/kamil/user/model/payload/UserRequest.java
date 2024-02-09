@@ -1,4 +1,4 @@
-package com.example.kamil.user.payload;
+package com.example.kamil.user.model.payload;
 
 import lombok.*;
 
@@ -11,7 +11,7 @@ public class UserRequest {
     private String username;
     private String email;
 
-    //private String password;
+    private String password;
     private String firstName;
     private String lastName;
 }

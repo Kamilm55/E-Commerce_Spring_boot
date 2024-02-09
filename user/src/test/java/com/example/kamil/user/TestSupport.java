@@ -1,7 +1,7 @@
 package com.example.kamil.user;
 
-import com.example.kamil.user.dto.UserDTO;
-import com.example.kamil.user.entity.User;
+import com.example.kamil.user.model.dto.UserDTO;
+import com.example.kamil.user.model.entity.User;
 import com.example.kamil.user.utils.converter.UserDTOConverter;
 
 import java.util.List;

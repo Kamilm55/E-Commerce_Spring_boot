@@ -1,4 +1,4 @@
-package com.example.kamil.user.dto;
+package com.example.kamil.user.model.dto;
 
 import lombok.*;
 
@@ -12,7 +12,6 @@ public class UserDTO {
 	private String username;
 	private String email;
 
-	//private String password;
 	private String firstName;
 	private String lastName;
 

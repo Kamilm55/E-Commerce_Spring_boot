@@ -1,4 +1,4 @@
-package com.example.kamil.user.entity;
+package com.example.kamil.user.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -19,8 +19,8 @@ public class User  {
 	private String username;
 	@Column(unique = true)
 	private String email;
+	private String password;
 
-	//private String password;
 	private String firstName;
 	private String lastName;
 	private Boolean isActive;

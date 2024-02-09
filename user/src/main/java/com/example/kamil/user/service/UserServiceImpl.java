@@ -1,16 +1,17 @@
 package com.example.kamil.user.service;
 
-import com.example.kamil.user.dto.UserDTO;
-import com.example.kamil.user.entity.User;
+import com.example.kamil.user.model.dto.UserDTO;
+import com.example.kamil.user.model.entity.User;
 import com.example.kamil.user.exception.customExceptions.UserIsAlreadyExistsWithThisEmailException;
 import com.example.kamil.user.exception.customExceptions.UserIsAlreadyExistsWithThisUsernameException;
 import com.example.kamil.user.exception.customExceptions.UserIsNotActiveException;
 import com.example.kamil.user.exception.customExceptions.UserNotFoundException;
-import com.example.kamil.user.payload.UserRequest;
+import com.example.kamil.user.model.payload.UserRequest;
 import com.example.kamil.user.repository.UserRepository;
 import com.example.kamil.user.utils.converter.UserDTOConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserDTO getUserByEmail(String email) {
@@ -29,6 +31,11 @@ public class UserServiceImpl implements UserService{
 
         return UserDTOConverter.convert(user);
      }
+
+    @Override
+    public User getUserByEmailForUserDetails(String email) {
+      return findUserByEmail(email);
+    }
 
     @Override
     public UserDTO insertUser(UserRequest userRequest) {
@@ -125,12 +132,16 @@ public class UserServiceImpl implements UserService{
                 .firstName(userRequest.getFirstName())
                 .username(userRequest.getUsername())
                 .email(userRequest.getEmail())
+                .password(passwordEncoder.encode(userRequest.getPassword()))
                 .isActive(false)
                 .build();
     }
     private User updateUserData(User user, UserRequest userRequest) {
+        // Email and username must be unique
         user.setEmail(userRequest.getEmail());
         user.setUsername(userRequest.getUsername());
+
+        user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         user.setFirstName(userRequest.getFirstName());
         user.setLastName(userRequest.getLastName());
 
