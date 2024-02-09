@@ -23,6 +23,15 @@ public class AuthController {
         return ResponseEntity.ok(authBusinessService.login(payload));
     }
 
+    @PostMapping("/register")
+    public ResponseEntity<Void> register(@RequestBody RegisterPayload payload){
+        authBusinessService.register(payload);
+
+        return ResponseEntity.ok().build();
+    }
+
+    //////
+
     @GetMapping("/test/user")
     public ResponseEntity<String> testUser(){
         return ResponseEntity.ok("user test works");
@@ -31,13 +40,6 @@ public class AuthController {
     public ResponseEntity<String> testAdmin(){
         return ResponseEntity.ok("testAdmin test works");
     }
-
-//    @PostMapping("/register")
-//    public ResponseEntity<Void> register(@RequestBody RegisterPayload payload){
-//        authBusinessService.register(payload);
-//
-//        return ResponseEntity.ok().build();
-//    }
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(){

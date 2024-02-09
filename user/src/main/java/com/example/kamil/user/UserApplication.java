@@ -1,6 +1,6 @@
 package com.example.kamil.user;
 
-import com.example.kamil.user.model.payload.UserRequest;
+import com.example.kamil.user.model.payload.RegisterPayload;
 import com.example.kamil.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
@@ -26,7 +26,7 @@ public class UserApplication implements CommandLineRunner {
 //		System.out.println(userService.getAll());
 
 		userService.insertUser(
-				UserRequest.builder()
+				RegisterPayload.builder()
 						.username("kamil")
 						.password("pass")
 						.email("email1@gmail.com")

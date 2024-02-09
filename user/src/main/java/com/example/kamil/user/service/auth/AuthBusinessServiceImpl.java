@@ -36,25 +36,17 @@ public class AuthBusinessServiceImpl implements AuthBusinessService{
 
         User user = userService.getUserByEmailForUserDetails(payload.getEmail());
 
-        return prepareLoginResponse(user,payload.isRememberMe());
+        return prepareLoginResponse(user);
 
     }
 
 
-//    @Override
-//    public void register(RegisterPayload payload) {
-//
-//
-//
-////         Insert user
-//        User user = UserEntityMapper.INSTANCE.fromRegisterPayloadToUser(
-//                payload,
-//                passwordEncoder.encode(payload.getPassword()),
-//                roleService.getDefaultRole().getId()
-//        );
-//        userService.insertUser(user);
-//
-//    }
+    @Override
+    public void register(RegisterPayload payload) {
+        // Insert user
+        // validations are done inside this method
+        userService.insertUser(payload);
+    }
 
 
     @Override
@@ -72,7 +64,7 @@ public class AuthBusinessServiceImpl implements AuthBusinessService{
 
     //  private util methods
     //refactorThis: use email instead of user ,then get user from userService via email
-    private LoginResponse prepareLoginResponse(User user , boolean rememberMe){
+    private LoginResponse prepareLoginResponse(User user ){
         return     LoginResponse.builder()
                 .accessToken(accessTokenManager.generate(user))
                 .userInfo(

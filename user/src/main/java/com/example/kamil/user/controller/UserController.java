@@ -1,7 +1,7 @@
 package com.example.kamil.user.controller;
 
 import com.example.kamil.user.model.dto.UserDTO;
-import com.example.kamil.user.model.payload.UserRequest;
+import com.example.kamil.user.model.payload.RegisterPayload;
 import com.example.kamil.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +31,7 @@ public class UserController {
     }
 
     @PostMapping("/addUser")
-    public ResponseEntity<UserDTO> addUser(@RequestBody UserRequest userRequest){
+    public ResponseEntity<UserDTO> addUser(@RequestBody RegisterPayload userRequest){
         return ResponseEntity.ok( userService.insertUser(userRequest));
     }
 
@@ -54,7 +54,7 @@ public class UserController {
     }
 
     @PutMapping("/{email}/updateUser")
-    public ResponseEntity<UserDTO> updateUser(@PathVariable("email") String email,@RequestBody UserRequest userRequest ){
+    public ResponseEntity<UserDTO> updateUser(@PathVariable("email") String email,@RequestBody RegisterPayload userRequest ){
         return ResponseEntity.ok(userService.updateUser(email,userRequest));
     }
 

@@ -8,7 +8,7 @@ import com.example.kamil.user.model.payload.RegisterPayload;
 public interface AuthBusinessService {
     LoginResponse login (LoginPayload payload);
 
-   // void register(RegisterPayload payload);
+    void register(RegisterPayload payload);
 
     void setAuthentication(String email);
 

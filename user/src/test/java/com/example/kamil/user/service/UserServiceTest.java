@@ -7,6 +7,7 @@ import com.example.kamil.user.exception.customExceptions.UserIsAlreadyExistsWith
 import com.example.kamil.user.exception.customExceptions.UserIsNotActiveException;
 import com.example.kamil.user.exception.customExceptions.UserNotFoundException;
 import com.example.kamil.user.exception.customExceptions.UserIsAlreadyExistsWithThisUsernameException;
+import com.example.kamil.user.model.payload.RegisterPayload;
 import com.example.kamil.user.model.payload.UserRequest;
 import com.example.kamil.user.repository.UserRepository;
 import com.example.kamil.user.utils.converter.UserDTOConverter;
@@ -154,7 +155,7 @@ public class UserServiceTest extends TestSupport {
         // A-A-A Arrange-Act-Assert
         // Arrange:
         String mail = "user@gmail.com";
-        UserRequest userRequest = UserRequest.builder().email(mail)
+        RegisterPayload userRequest = RegisterPayload.builder().email(mail)
                 .password(passwordEncoder.encode("pass"))
                 .firstName("first").lastName("l").username("user").build();
        // before save
@@ -190,7 +191,7 @@ public class UserServiceTest extends TestSupport {
         // A-A-A Arrange-Act-Assert
         // Arrange:
         String mail = "user@gmail.com";
-        UserRequest userRequest = UserRequest.builder().email(mail).firstName("first").lastName("l").username("user").build();
+        RegisterPayload userRequest = RegisterPayload.builder().email(mail).firstName("first").lastName("l").username("user").build();
 
         // condition:
         when(userRepository.existsByEmail(mail)).thenReturn(true);
@@ -206,7 +207,7 @@ public class UserServiceTest extends TestSupport {
         // A-A-A Arrange-Act-Assert
         // Arrange:
         String mail = "user@gmail.com";
-        UserRequest userRequest = UserRequest.builder().email(mail).firstName("first").lastName("l").username("user").build();
+        RegisterPayload userRequest = RegisterPayload.builder().email(mail).firstName("first").lastName("l").username("user").build();
 
         // condition:
         when(userRepository.existsByEmail(mail)).thenReturn(false);
@@ -225,7 +226,7 @@ public class UserServiceTest extends TestSupport {
         // A-A-A Arrange-Act-Assert
         // Arrange:
         String mail = "user@gmail.com";
-        UserRequest userRequest = UserRequest.builder().email(mail)
+        RegisterPayload userRequest = RegisterPayload.builder().email(mail)
                 .password(passwordEncoder.encode("pass"))
                 .firstName("first").lastName("l").username("user").build();
         // before save
@@ -264,7 +265,7 @@ public class UserServiceTest extends TestSupport {
         // A-A-A Arrange-Act-Assert
         // Arrange:
         String mail = "user@gmail.com";
-        UserRequest userRequest = UserRequest.builder().email(mail).firstName("first").lastName("l").username("user").build();
+        RegisterPayload userRequest = RegisterPayload.builder().email(mail).firstName("first").lastName("l").username("user").build();
         // before save
         User user = User.builder().email(mail).firstName("first").lastName("l").username("user").isActive(true).build();
 //
@@ -299,7 +300,7 @@ public class UserServiceTest extends TestSupport {
         // A-A-A Arrange-Act-Assert
         // Arrange:
         String mail = "user@gmail.com";
-        UserRequest userRequest = UserRequest.builder().email(mail).firstName("first").lastName("l").username("user").build();
+        RegisterPayload userRequest = RegisterPayload.builder().email(mail).firstName("first").lastName("l").username("user").build();
         // before save
         User user = User.builder().email(mail).firstName("first").lastName("l").username("user").isActive(false).build();
 //
@@ -333,7 +334,7 @@ public class UserServiceTest extends TestSupport {
     public void testUpdateUser_whenUserMailExistsAndUserIsActiveButOtherUserIsAlreadyExistsWithEmail_itShouldThrowUserIsAlreadyExistsWithThisEmailException(){
         // Arrange:
         String mail = "user@gmail.com";
-        UserRequest userRequest = UserRequest.builder().email(mail).firstName("reqF").lastName("reqL").username("reqUser").build();
+        RegisterPayload userRequest = RegisterPayload.builder().email(mail).firstName("reqF").lastName("reqL").username("reqUser").build();
 
         User savedUser = User.builder()
                 .id(1L)
@@ -362,7 +363,7 @@ public class UserServiceTest extends TestSupport {
     public void testUpdateUser_whenUserMailExistsAndUserIsActiveButOtherUserIsAlreadyExistsWithUsername_itShouldThrowUserIsAlreadyExistsWithThisUsernameException(){
         // Arrange:
         String mail = "user@gmail.com";
-        UserRequest userRequest = UserRequest.builder().email(mail).firstName("reqF").lastName("reqL").username("reqUser").build();
+        RegisterPayload userRequest = RegisterPayload.builder().email(mail).firstName("reqF").lastName("reqL").username("reqUser").build();
 
         User savedUser = User.builder()
                 .id(1L)

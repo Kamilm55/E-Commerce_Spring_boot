@@ -6,7 +6,7 @@ import com.example.kamil.user.exception.customExceptions.UserIsAlreadyExistsWith
 import com.example.kamil.user.exception.customExceptions.UserIsAlreadyExistsWithThisUsernameException;
 import com.example.kamil.user.exception.customExceptions.UserIsNotActiveException;
 import com.example.kamil.user.exception.customExceptions.UserNotFoundException;
-import com.example.kamil.user.model.payload.UserRequest;
+import com.example.kamil.user.model.payload.RegisterPayload;
 import com.example.kamil.user.repository.UserRepository;
 import com.example.kamil.user.utils.converter.UserDTOConverter;
 import lombok.RequiredArgsConstructor;
@@ -38,8 +38,8 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserDTO insertUser(UserRequest userRequest) {
-       validateUniquenessOfEmailAndUsername(userRequest);
+    public UserDTO insertUser(RegisterPayload userRequest) {
+        validateUniquenessOfEmailAndUsername(userRequest);
 
         User user = populateUser(userRequest);
 
@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserDTO updateUser(String email, UserRequest userRequest) {
+    public UserDTO updateUser(String email, RegisterPayload userRequest) {
         User userFromDB = findUserByEmail(email);
 
         if(!userFromDB.getIsActive()){
@@ -100,7 +100,7 @@ public class UserServiceImpl implements UserService{
 
 
     // Util methods
-    private void validateForUpdate(User currentUser, UserRequest userRequest) {
+    private void validateForUpdate(User currentUser, RegisterPayload userRequest) {
         String emailFromRequest = userRequest.getEmail();
         String usernameFromRequest = userRequest.getUsername();
 
@@ -113,7 +113,7 @@ public class UserServiceImpl implements UserService{
 
     }
 
-    private void validateUniquenessOfEmailAndUsername(UserRequest userRequest) {
+    private void validateUniquenessOfEmailAndUsername(RegisterPayload userRequest) {
        ifExistsByEmailThrowException(userRequest.getEmail());
        ifExistsByUsernameThrowException(userRequest.getUsername());
     }
@@ -126,7 +126,7 @@ public class UserServiceImpl implements UserService{
         if(userRepository.existsByEmail(email))
             throw new UserIsAlreadyExistsWithThisEmailException(email);
     }
-    private User populateUser(UserRequest userRequest){
+    private User populateUser(RegisterPayload userRequest){
         return User.builder()
                 .lastName(userRequest.getLastName())
                 .firstName(userRequest.getFirstName())
@@ -136,7 +136,7 @@ public class UserServiceImpl implements UserService{
                 .isActive(false)
                 .build();
     }
-    private User updateUserData(User user, UserRequest userRequest) {
+    private User updateUserData(User user, RegisterPayload userRequest) {
         // Email and username must be unique
         user.setEmail(userRequest.getEmail());
         user.setUsername(userRequest.getUsername());
