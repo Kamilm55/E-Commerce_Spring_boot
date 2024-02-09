@@ -28,7 +28,6 @@ public class AuthBusinessServiceImpl implements AuthBusinessService{
     private final UserService userService;
     private final AccessTokenManager accessTokenManager;
     private final UserDetailsService userDetailsService;
-    private final PasswordEncoder passwordEncoder;
 
     @Override
     public LoginResponse login(LoginPayload payload) {

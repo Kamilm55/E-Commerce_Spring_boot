@@ -8,7 +8,6 @@ import com.example.kamil.user.exception.customExceptions.UserIsNotActiveExceptio
 import com.example.kamil.user.exception.customExceptions.UserNotFoundException;
 import com.example.kamil.user.exception.customExceptions.UserIsAlreadyExistsWithThisUsernameException;
 import com.example.kamil.user.model.payload.RegisterPayload;
-import com.example.kamil.user.model.payload.UserRequest;
 import com.example.kamil.user.repository.UserRepository;
 import com.example.kamil.user.utils.converter.UserDTOConverter;
 import lombok.extern.slf4j.Slf4j;
@@ -149,6 +148,41 @@ public class UserServiceTest extends TestSupport {
         verify(userRepository).findByEmail(mail);
     }
 
+    @Test
+    public void testGetUserByEmailForUserDetails_whenUserMailExists_itShouldReturnUser(){
+        // A-A-A Arrange-Act-Assert
+
+        // Arrange:
+        String mail = "user@gmail.com";
+        User user = generateUser(mail);
+
+        when(userRepository.findByEmail(mail)).thenReturn(Optional.of(user));
+
+        // Act:
+        User result = userService.getUserByEmailForUserDetails(mail);
+
+        // Assert:
+        assertEquals(user,result);
+
+        verify(userRepository).findByEmail(mail);
+    }
+
+    @Test
+    public void testGetUserByEmailForUserDetails_whenUserMailDoesNotExist_itShouldThrowUserNotFoundException(){
+        // Arrange:
+        String mail = "user@gmail.com";
+        User user = generateUser(mail);
+
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.empty());
+
+        // Assert:
+        assertThrows(UserNotFoundException.class , ()->{
+            // Act:
+            userService.getUserByEmailForUserDetails(mail);
+        });
+
+        verify(userRepository).findByEmail(mail);
+    }
 
     @Test
     public void testInsertUser_itShouldReturnCreatedUserDto(){
