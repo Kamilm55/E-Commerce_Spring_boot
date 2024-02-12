@@ -32,15 +32,6 @@ public class AuthController {
 
     //////
 
-    @GetMapping("/test/user")
-    public ResponseEntity<String> testUser(){
-        return ResponseEntity.ok("user test works");
-    }
-    @GetMapping("/test/testAdmin")
-    public ResponseEntity<String> testAdmin(){
-        return ResponseEntity.ok("testAdmin test works");
-    }
-
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(){
        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

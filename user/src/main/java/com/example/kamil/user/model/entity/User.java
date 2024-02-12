@@ -1,7 +1,10 @@
 package com.example.kamil.user.model.entity;
 
+import com.example.kamil.user.model.security.LoggedInUserDetails;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.Set;
 
 @Entity
 @EqualsAndHashCode
@@ -25,6 +28,8 @@ public class User  {
 	private String lastName;
 	private Boolean isActive;
 
+	@OneToMany(fetch = FetchType.LAZY , cascade = CascadeType.ALL)
+	private Set<LoggedInUserDetails> userDetails;
 
 }
 

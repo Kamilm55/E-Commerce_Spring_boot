@@ -1,6 +1,9 @@
 package com.example.kamil.user;
 
+import com.example.kamil.user.model.dto.UserDTO;
+import com.example.kamil.user.model.entity.User;
 import com.example.kamil.user.model.payload.RegisterPayload;
+import com.example.kamil.user.repository.UserRepository;
 import com.example.kamil.user.service.UserService;
 import com.example.kamil.user.utils.PublicPrivateKeyUtil;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +16,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class UserApplication implements CommandLineRunner {
 
 	private final UserService userService;
+	private final UserRepository userRepository;
 	public static void main(String[] args) {
 		SpringApplication.run(UserApplication.class, args);
 	}
@@ -35,10 +39,13 @@ public class UserApplication implements CommandLineRunner {
 						.lastName("dasdsad")
 						.build()
 		);
+		User user = userService.getUserByEmailForUserDetails("email1@gmail.com");
+//		System.out.println(user);
+//		System.out.println(user.getUserDetails());
 
-		System.out.println(PublicPrivateKeyUtil.getPublicKey());
-		System.out.println();
-		System.out.println(PublicPrivateKeyUtil.getPrivateKey());
+//		System.out.println(PublicPrivateKeyUtil.getPublicKey());
+//		System.out.println();
+//		System.out.println(PublicPrivateKeyUtil.getPrivateKey());
 //		userService.getAll()
 //				.stream()
 ////				.filter(user -> user.isActive())

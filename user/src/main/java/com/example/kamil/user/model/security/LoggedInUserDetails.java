@@ -1,11 +1,9 @@
 package com.example.kamil.user.model.security;
 
+import com.example.kamil.user.model.entity.User;
 import com.example.kamil.user.model.enums.Role;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,12 +14,21 @@ import java.util.List;
 import java.util.Set;
 
 @AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Data
 @EqualsAndHashCode
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public final class LoggedInUserDetails implements UserDetails {
-    String username;
-    String password;
+@Entity
+public class LoggedInUserDetails implements UserDetails {
+//    String username;
+//    String password;
+    @Id
+    @GeneratedValue
+    Long id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    User user;
+
     //Learn:
     // Used when you want to model a collection of simple (non-entity) elements associated with an entity
     // relationships such as OneToMany is used when target class is entity
@@ -34,6 +41,7 @@ public final class LoggedInUserDetails implements UserDetails {
     @Enumerated(EnumType.STRING)
     Set<Role> authorities;
 
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
@@ -41,12 +49,12 @@ public final class LoggedInUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return password;
+        return user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return username;
+        return user.getUsername();
     }
 
     @Override
@@ -68,4 +76,5 @@ public final class LoggedInUserDetails implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
 }

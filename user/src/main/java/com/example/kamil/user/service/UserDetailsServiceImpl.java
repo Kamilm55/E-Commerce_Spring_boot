@@ -27,8 +27,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         log.warn("USER INFO:");
         System.out.println(user);
 
-        //refactorThis: role can be change
-            return new LoggedInUserDetails(user.getEmail(),user.getPassword(),Set.of(Role.ROLE_USER));
-
+            return LoggedInUserDetails.builder()
+                    .user(user)
+                    .build();
     }
 }

@@ -6,7 +6,9 @@ import com.example.kamil.user.exception.customExceptions.UserIsAlreadyExistsWith
 import com.example.kamil.user.exception.customExceptions.UserIsAlreadyExistsWithThisUsernameException;
 import com.example.kamil.user.exception.customExceptions.UserIsNotActiveException;
 import com.example.kamil.user.exception.customExceptions.UserNotFoundException;
+import com.example.kamil.user.model.enums.Role;
 import com.example.kamil.user.model.payload.RegisterPayload;
+import com.example.kamil.user.model.security.LoggedInUserDetails;
 import com.example.kamil.user.repository.UserRepository;
 import com.example.kamil.user.utils.converter.UserDTOConverter;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,9 +44,13 @@ public class UserServiceImpl implements UserService{
     public UserDTO insertUser(RegisterPayload userRequest) {
         validateUniquenessOfEmailAndUsername(userRequest);
 
-        User user = populateUser(userRequest);
+        User user = populateUserAndItsDetails(userRequest);
 
-        return UserDTOConverter.convert( userRepository.save(user));
+        User savedUser = userRepository.save(user);
+
+        //todo: set user id into UserDetails 's user
+
+        return UserDTOConverter.convert(savedUser);
     }
 
     @Override
@@ -126,7 +133,7 @@ public class UserServiceImpl implements UserService{
         if(userRepository.existsByEmail(email))
             throw new UserIsAlreadyExistsWithThisEmailException(email);
     }
-    private User populateUser(RegisterPayload userRequest){
+    private User populateUserAndItsDetails(RegisterPayload userRequest){
         return User.builder()
                 .lastName(userRequest.getLastName())
                 .firstName(userRequest.getFirstName())
@@ -134,6 +141,10 @@ public class UserServiceImpl implements UserService{
                 .email(userRequest.getEmail())
                 .password(passwordEncoder.encode(userRequest.getPassword()))
                 .isActive(false)
+                .userDetails(
+                        Set.of(LoggedInUserDetails.builder()
+                        .authorities(Set.of(Role.ROLE_USER))
+                        .build()))
                 .build();
     }
     private User updateUserData(User user, RegisterPayload userRequest) {
