@@ -6,7 +6,7 @@ import com.example.kamil.user.model.dto.UserDTO;
 import com.example.kamil.user.model.entity.User;
 import com.example.kamil.user.model.payload.LoginPayload;
 import com.example.kamil.user.model.payload.RegisterPayload;
-import com.example.kamil.user.model.security.LoggedInUserDetails;
+import com.example.kamil.user.model.entity.security.LoggedInUserDetails;
 import com.example.kamil.user.service.UserService;
 import com.example.kamil.user.service.security.AccessTokenManager;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service

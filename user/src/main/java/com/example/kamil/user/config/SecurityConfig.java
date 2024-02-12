@@ -56,7 +56,7 @@ public class SecurityConfig {
 //                    request.requestMatchers("/v1/auth/logout").authenticated();
                     // user role
                     request.requestMatchers("/v1/test/user").hasRole(Role.ROLE_USER.getValue());
-                    request.requestMatchers("/v1/test/testAdmin").hasRole(Role.ROLE_ADMIN.getValue());
+                    request.requestMatchers("/v1/test/testAdmin").hasAnyRole(Role.ROLE_ADMIN.getValue());
                     request.requestMatchers("/v1/auth/**").anonymous();//accessible to only unauthenticated users
 
                     request.requestMatchers("/h2-console/**").permitAll(); // permits access to all URLs starting with /h2-console/ without authentication.

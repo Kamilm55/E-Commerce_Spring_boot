@@ -17,4 +17,7 @@ public interface UserService {
     void activateUser(String email);
     void deleteUser(String email);
 
+    User findUserByEmail(String email);
+
+    User addAdminRole (User user);
 }

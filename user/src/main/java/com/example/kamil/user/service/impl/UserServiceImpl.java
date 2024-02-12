@@ -1,4 +1,4 @@
-package com.example.kamil.user.service;
+package com.example.kamil.user.service.impl;
 
 import com.example.kamil.user.model.dto.UserDTO;
 import com.example.kamil.user.model.entity.User;
@@ -8,9 +8,11 @@ import com.example.kamil.user.exception.customExceptions.UserIsNotActiveExceptio
 import com.example.kamil.user.exception.customExceptions.UserNotFoundException;
 import com.example.kamil.user.model.enums.Role;
 import com.example.kamil.user.model.payload.RegisterPayload;
-import com.example.kamil.user.model.security.LoggedInUserDetails;
+import com.example.kamil.user.model.entity.security.LoggedInUserDetails;
 import com.example.kamil.user.repository.UserRepository;
+import com.example.kamil.user.service.UserService;
 import com.example.kamil.user.utils.converter.UserDTOConverter;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,8 +25,9 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
+   // private final LoggedInUserDetailsService loggedInUserDetailsService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -36,8 +39,9 @@ public class UserServiceImpl implements UserService{
      }
 
     @Override
+//    @Transactional
     public User getUserByEmailForUserDetails(String email) {
-      return findUserByEmail(email);
+        return userRepository.findByEmail(email).orElseThrow(()-> new UserNotFoundException("User not found with this email: " + email));
     }
 
     @Override
@@ -47,8 +51,6 @@ public class UserServiceImpl implements UserService{
         User user = populateUserAndItsDetails(userRequest);
 
         User savedUser = userRepository.save(user);
-
-        //todo: set user id into UserDetails 's user
 
         return UserDTOConverter.convert(savedUser);
     }
@@ -93,6 +95,22 @@ public class UserServiceImpl implements UserService{
         User user = findUserByEmail(email);
 
         userRepository.deleteById(user.getId());
+    }
+
+    @Override
+    @Transactional
+    public User findUserByEmail(String email) {
+           return userRepository.findByEmail(email).orElseThrow(()-> new UserNotFoundException("User not found with this email: " + email));
+    }
+
+    @Override
+    @Transactional
+    public User addAdminRole(User user) {
+        User userFromDb = findUserByEmail(user.getEmail());
+
+        userFromDb.getUserDetails().addAuthority(Role.ROLE_ADMIN);
+
+        return userRepository.save(userFromDb);
     }
 
     @Override
@@ -142,9 +160,9 @@ public class UserServiceImpl implements UserService{
                 .password(passwordEncoder.encode(userRequest.getPassword()))
                 .isActive(false)
                 .userDetails(
-                        Set.of(LoggedInUserDetails.builder()
+                       LoggedInUserDetails.builder()
                         .authorities(Set.of(Role.ROLE_USER))
-                        .build()))
+                        .build())
                 .build();
     }
     private User updateUserData(User user, RegisterPayload userRequest) {
@@ -163,8 +181,7 @@ public class UserServiceImpl implements UserService{
         user.setIsActive(status);
         userRepository.save(user);
     }
-    private User findUserByEmail(String email){
-        return userRepository.findByEmail(email).orElseThrow(()-> new UserNotFoundException("User not found with this email: " + email));
-    }
+
+
 
 }

@@ -1,4 +1,4 @@
-package com.example.kamil.user.model.security;
+package com.example.kamil.user.model.entity.security;
 
 import com.example.kamil.user.model.entity.User;
 import com.example.kamil.user.model.enums.Role;
@@ -6,18 +6,17 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Data
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = "user") // this is important for operations in db
+@ToString(exclude = "user")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 public class LoggedInUserDetails implements UserDetails {
@@ -26,15 +25,16 @@ public class LoggedInUserDetails implements UserDetails {
     @Id
     @GeneratedValue
     Long id;
-    @ManyToOne(fetch = FetchType.LAZY)
+
+    @OneToOne(fetch = FetchType.LAZY , mappedBy = "userDetails")
     User user;
 
-    //Learn:
-    // Used when you want to model a collection of simple (non-entity) elements associated with an entity
-    // relationships such as OneToMany is used when target class is entity
-    // Typically used for basic types (e.g., strings, numbers, enums) or embeddable objects (we don't need build an entity for this)
-    // Creates a separate table (e.g., "authorities") to store the collection elements.
-    // The owning entity (User in this case) has a foreign key reference to the collection table.
+    String phoneNumber;
+    String address;
+    String city;
+    String country;
+    String postCode;
+
     @ElementCollection(targetClass = Role.class , fetch = FetchType.EAGER)
     @JoinTable(name = "authorities",joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role", nullable = false) // every user ("user_id") must be reference role
@@ -42,6 +42,9 @@ public class LoggedInUserDetails implements UserDetails {
     Set<Role> authorities;
 
 
+    public boolean addAuthority(Role role){
+        return authorities.add(role);
+    }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;

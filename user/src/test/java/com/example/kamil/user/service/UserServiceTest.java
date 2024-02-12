@@ -9,6 +9,7 @@ import com.example.kamil.user.exception.customExceptions.UserNotFoundException;
 import com.example.kamil.user.exception.customExceptions.UserIsAlreadyExistsWithThisUsernameException;
 import com.example.kamil.user.model.payload.RegisterPayload;
 import com.example.kamil.user.repository.UserRepository;
+import com.example.kamil.user.service.impl.UserServiceImpl;
 import com.example.kamil.user.utils.converter.UserDTOConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;

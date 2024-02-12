@@ -1,13 +1,18 @@
 package com.example.kamil.user.model.entity;
 
-import com.example.kamil.user.model.security.LoggedInUserDetails;
+import com.example.kamil.user.model.entity.security.LoggedInUserDetails;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Set;
 
 @Entity
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = "userDetails") // this is important for operations in db
+@ToString(exclude = "userDetails")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,8 +33,10 @@ public class User  {
 	private String lastName;
 	private Boolean isActive;
 
-	@OneToMany(fetch = FetchType.LAZY , cascade = CascadeType.ALL)
-	private Set<LoggedInUserDetails> userDetails;
+	@OneToOne(fetch = FetchType.LAZY , cascade = CascadeType.ALL)
+	@JoinColumn(name = "userDetails_id" , referencedColumnName = "id",nullable = false)
+	@JsonIgnore // Ignore during serialization to break the loop
+	private LoggedInUserDetails userDetails;
 
 }
 

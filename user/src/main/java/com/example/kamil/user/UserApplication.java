@@ -4,6 +4,7 @@ import com.example.kamil.user.model.dto.UserDTO;
 import com.example.kamil.user.model.entity.User;
 import com.example.kamil.user.model.payload.RegisterPayload;
 import com.example.kamil.user.repository.UserRepository;
+import com.example.kamil.user.service.LoggedInUserDetailsService;
 import com.example.kamil.user.service.UserService;
 import com.example.kamil.user.utils.PublicPrivateKeyUtil;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class UserApplication implements CommandLineRunner {
 
 	private final UserService userService;
+	private final LoggedInUserDetailsService loggedInUserDetailsService;
 	private final UserRepository userRepository;
 	public static void main(String[] args) {
 		SpringApplication.run(UserApplication.class, args);
@@ -30,7 +32,7 @@ public class UserApplication implements CommandLineRunner {
 //
 //		System.out.println(userService.getAll());
 
-		userService.insertUser(
+		UserDTO insertedUser = userService.insertUser(
 				RegisterPayload.builder()
 						.username("kamil")
 						.password("pass")
@@ -39,18 +41,31 @@ public class UserApplication implements CommandLineRunner {
 						.lastName("dasdsad")
 						.build()
 		);
-		User user = userService.getUserByEmailForUserDetails("email1@gmail.com");
-//		System.out.println(user);
-//		System.out.println(user.getUserDetails());
+		UserDTO userDTO2 = userService.insertUser(
+				RegisterPayload.builder()
+						.username("admin")
+						.password("pass")
+						.email("admin@gmail.com")
+						.firstName("admin")
+						.lastName("sad")
+						.build()
+		);
 
-//		System.out.println(PublicPrivateKeyUtil.getPublicKey());
-//		System.out.println();
-//		System.out.println(PublicPrivateKeyUtil.getPrivateKey());
-//		userService.getAll()
-//				.stream()
-////				.filter(user -> user.isActive())
-//				.forEach(user -> System.out.println(user.isActive()));
+		// ADD ADMIN ROLE
+		User user2 = userService.getUserByEmailForUserDetails(userDTO2.getEmail());
+		User addAdminRole = userService.addAdminRole(user2);
 
+
+		//todo: why when i print it works otherwise not?
+		// ->
+		//   Printing causes throw lazy init exception
+		System.out.println(loggedInUserDetailsService.getUserDetails(
+				userService.getUserByEmailForUserDetails(insertedUser.getEmail())
+		));
+
+
+
+//		System.out.println(insertedUser);
 
 	}
 }
