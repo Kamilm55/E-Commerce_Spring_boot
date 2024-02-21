@@ -28,13 +28,21 @@ public class LoggedInUserDetailsServiceImpl implements LoggedInUserDetailsServic
     }
 
     @Override
-    @Transactional // It makes active hibernate session , we cannot get lazy init obj without this
     public LoggedInUserDetails getUserDetails(User user) {
-        User userFromDb = userService.findUserByEmail(user.getEmail());
-
-//        System.out.println(userFromDb.getUserDetails());
-        //todo: why when i print it works otherwise not?
-        return userFromDb.getUserDetails();
+       return userDetailsRepository.findByUserEmail(user.getEmail());
     }
+
+
+    // Test \\
+//    @Override
+//    @Transactional // It makes active hibernate session , we cannot get lazy init obj without this
+//    public LoggedInUserDetails getUserDetails(User user) {
+//        User userFromDb = userService.findUserByEmail(user.getEmail());
+//
+//       // System.out.println(userFromDb.getUserDetails());
+//        //todo: why when i print it works otherwise not?
+//        LoggedInUserDetails userDetails = userFromDb.getUserDetails();
+//        return userDetails;
+//    }
 
 }

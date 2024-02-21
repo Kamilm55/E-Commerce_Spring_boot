@@ -37,8 +37,6 @@ public class AuthorizationFilter extends OncePerRequestFilter {
         // This approach assumes that the token itself is a valid proof of authentication!
         String token = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        System.out.println("Filter works");
-        System.out.println(token);
         try {
             String TOKEN_PREFIX = "Bearer ";
             if(token != null && token.startsWith(TOKEN_PREFIX)){

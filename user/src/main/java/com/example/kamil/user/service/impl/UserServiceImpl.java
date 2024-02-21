@@ -98,7 +98,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
+    @Transactional(/*value = Transactional.TxType.REQUIRES_NEW*/)
     public User findUserByEmail(String email) {
            return userRepository.findByEmail(email).orElseThrow(()-> new UserNotFoundException("User not found with this email: " + email));
     }

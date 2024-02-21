@@ -45,28 +45,31 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http , AuthorizationFilter authorizationFilter) throws Exception {
 
         return http
+                .csrf(AbstractHttpConfigurer::disable)
+                .headers(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> {
 
                     // Swagger UI -> permit all swagger sub-path , for ex: "/swagger-ui/" ,"/swagger-ui/index.html" ,"/swagger-ui/api-docs" etc.
                     request.requestMatchers("/v3/api-docs/**","/swagger-ui/**").permitAll();
+                    request.requestMatchers("/h2-console/**").permitAll(); // permits access to all URLs starting with /h2-console/ without authentication.
 
                     // todo: Secure http requests !
 
                     //   Auth URLs
-//                    request.requestMatchers("/v1/auth/logout").authenticated();
-                    // user role
-                    request.requestMatchers("/v1/test/user").hasRole(Role.ROLE_USER.getValue());
-                    request.requestMatchers("/v1/test/testAdmin").hasAnyRole(Role.ROLE_ADMIN.getValue());
+                    request.requestMatchers("/v1/auth/logout").authenticated();
                     request.requestMatchers("/v1/auth/**").anonymous();//accessible to only unauthenticated users
 
-                    request.requestMatchers("/h2-console/**").permitAll(); // permits access to all URLs starting with /h2-console/ without authentication.
+
+                    request
+                            .requestMatchers("/v1/test/user").hasRole(Role.ROLE_USER.getValue())
+                            .requestMatchers("/v1/test/testAdmin").hasAnyRole(Role.ROLE_ADMIN.getValue());
+
+
                 })
                 .addFilterBefore(authorizationFilter, UsernamePasswordAuthenticationFilter.class)
-                .csrf(AbstractHttpConfigurer::disable)
-                .headers(AbstractHttpConfigurer::disable)
                 .sessionManagement(sm->sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .httpBasic(Customizer.withDefaults())// it solves 403 instead of 401 problem
-//                .formLogin(Customizer.withDefaults())
+                .formLogin(Customizer.withDefaults())
                 .build();
     }
 

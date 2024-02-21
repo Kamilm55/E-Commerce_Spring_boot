@@ -26,9 +26,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         log.warn("USER INFO:");
         System.out.println(user);
 
-        LoggedInUserDetails userDetails = loggedInUserDetailsService.getUserDetails(user);
-//        System.out.println(userDetails);
-
-        return userDetails;
+        return loggedInUserDetailsService.getUserDetails(user);
     }
 }

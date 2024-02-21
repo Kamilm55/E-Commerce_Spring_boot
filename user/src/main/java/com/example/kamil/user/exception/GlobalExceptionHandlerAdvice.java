@@ -6,6 +6,7 @@ import com.example.kamil.user.exception.customExceptions.UserIsNotActiveExceptio
 import com.example.kamil.user.exception.customExceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -27,6 +28,11 @@ public class GlobalExceptionHandlerAdvice {
     @ExceptionHandler(value = UserIsAlreadyExistsWithThisUsernameException.class)
     public ResponseEntity<?> handleUserIsAlreadyExistsWithThisUsername(UserIsAlreadyExistsWithThisUsernameException exception){
         return new ResponseEntity<>(exception.getMessage(),HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(value = AccessDeniedException.class)
+    public ResponseEntity<?> handleUserForbidden(AccessDeniedException exception){
+        return new ResponseEntity<>(exception.getMessage(),HttpStatus.FORBIDDEN);
     }
 
     // For unhandled exceptions:
