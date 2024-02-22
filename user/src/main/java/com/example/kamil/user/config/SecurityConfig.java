@@ -1,5 +1,7 @@
 package com.example.kamil.user.config;
 
+import com.example.kamil.user.exception.AppAuthenticationEntryPoint;
+import com.example.kamil.user.exception.GlobalExceptionHandlerAdvice;
 import com.example.kamil.user.filter.AuthorizationFilter;
 import com.example.kamil.user.model.enums.Role;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +17,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -41,12 +44,21 @@ public class SecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
+
+    @Bean
+    public AuthenticationEntryPoint authenticationEntryPoint() {
+        return new AppAuthenticationEntryPoint();
+    }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http , AuthorizationFilter authorizationFilter) throws Exception {
 
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .headers(AbstractHttpConfigurer::disable)
+                .addFilterBefore(authorizationFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling( (exception)->
+                        exception.authenticationEntryPoint(authenticationEntryPoint())
+                )
                 .authorizeHttpRequests(request -> {
 
                     // Swagger UI -> permit all swagger sub-path , for ex: "/swagger-ui/" ,"/swagger-ui/index.html" ,"/swagger-ui/api-docs" etc.
@@ -66,10 +78,10 @@ public class SecurityConfig {
 
 
                 })
-                .addFilterBefore(authorizationFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(sm->sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .httpBasic(Customizer.withDefaults())// it solves 403 instead of 401 problem
-                .formLogin(Customizer.withDefaults())
+                //.formLogin(Customizer.withDefaults())
+
                 .build();
     }
 

@@ -68,10 +68,8 @@ public class UserApplication implements CommandLineRunner {
 		System.out.println(loggedInUserDetailsRepository.findByUserEmail(user2.getEmail()));
 
 
-		// Bunlara bax
-		// https://github.com/spring-projects/spring-boot/issues/31852
-		// https://www.google.com/search?q=DelegatingAuthenticationEntryPoint+%3A+No+match+found.+Using+default+entry+point&rlz=1C1GCEA_enAZ970AZ970&oq=DelegatingAuthenticationEntryPoint+%3A+No+match+found.+Using+default+entry+point&gs_lcrp=EgZjaHJvbWUyBggAEEUYOdIBBzM2MmowajeoAgCwAgA&sourceid=chrome&ie=UTF-8
-		//
+		// PROBLEM SOLVED , BUT IT IS NOT BEST PRACTICE
+		// todo: why inside commence method response come with status 200 ?
 
 		// GET USER 1
 		//UserDTO user = userService.getUserByEmail(insertedUser.getEmail());
