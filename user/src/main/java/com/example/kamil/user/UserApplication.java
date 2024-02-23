@@ -57,15 +57,15 @@ public class UserApplication implements CommandLineRunner {
 						.build()
 		);
 
-		// ADD ADMIN ROLE
-		User user2 = userService.getUserByEmailForUserDetails(userDTO2.getEmail());
-		User addAdminRole = userService.addAdminRole(user2);
+//		// ADD ADMIN ROLE
+//		User user2 = userService.getUserByEmailForUserDetails(userDTO2.getEmail());
+//		User addAdminRole = userService.addAdminRole(user2);
 
 		// GET DETAILS OF USERS
 		// Learn: We can get lazy loaded field with the help of query
 		//  outside of active hibernate session (@transactional)
-		System.out.println(loggedInUserDetailsRepository.findByUserEmail(insertedUser.getEmail()));
-		System.out.println(loggedInUserDetailsRepository.findByUserEmail(user2.getEmail()));
+//		System.out.println(loggedInUserDetailsRepository.findByUserEmail(insertedUser.getEmail()));
+//		System.out.println(loggedInUserDetailsRepository.findByUserEmail(user2.getEmail()));
 
 
 		// PROBLEM SOLVED , BUT IT IS NOT BEST PRACTICE
@@ -73,6 +73,8 @@ public class UserApplication implements CommandLineRunner {
 
 		// GET USER 1
 		//UserDTO user = userService.getUserByEmail(insertedUser.getEmail());
+
+
 
 
 		////////////////////////////

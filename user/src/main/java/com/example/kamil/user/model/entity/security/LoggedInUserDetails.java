@@ -20,8 +20,7 @@ import java.util.Set;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 public class LoggedInUserDetails implements UserDetails {
-//    String username;
-//    String password;
+
     @Id
     @GeneratedValue
     Long id;
@@ -42,9 +41,10 @@ public class LoggedInUserDetails implements UserDetails {
     Set<Role> authorities;
 
 
-    public boolean addAuthority(Role role){
-        return authorities.add(role);
+    public void addAuthority(Role role){
+        authorities.add(role);
     }
+    public void deleteAuthority(Role role){authorities.remove(role);}
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;

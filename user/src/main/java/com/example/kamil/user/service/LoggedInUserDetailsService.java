@@ -1,13 +1,25 @@
 package com.example.kamil.user.service;
 
 
+import com.example.kamil.user.model.dto.LoggedInUserDetailsDTO;
 import com.example.kamil.user.model.entity.User;
 import com.example.kamil.user.model.entity.security.LoggedInUserDetails;
-import com.example.kamil.user.model.payload.UserDetailsPayload;
+import com.example.kamil.user.model.payload.UpdateUserDetailsPayload;
+import com.example.kamil.user.model.payload.CreateUserDetailsPayload;
+
+import java.util.List;
 
 public interface LoggedInUserDetailsService {
-    void insertUserDetails(UserDetailsPayload payload);
-    LoggedInUserDetails getUserDetails(User user);
+  //  void insertUserDetails(CreateUserDetailsPayload payload);
+    LoggedInUserDetails getUserDetailsForSecurity(User user);
+    LoggedInUserDetailsDTO getUserDetailsByEmail(String email);
+    LoggedInUserDetailsDTO updateUserUserDetails(String email, UpdateUserDetailsPayload updateUserDetailsPayload);
+    void addAdminRole(String email);
+    void deleteAdminRole(String email);
+    void addVendorRole(String email);
+    void deleteVendorRole(String email);
 
 
+
+  // List<LoggedInUserDetailsDTO> getAll();
 }

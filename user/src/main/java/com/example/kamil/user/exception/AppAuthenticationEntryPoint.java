@@ -33,11 +33,11 @@ public class AppAuthenticationEntryPoint implements AuthenticationEntryPoint {
         return setResponseError(org.springframework.http.HttpStatus.FORBIDDEN, String.format("Access Denied: %s", ex.getMessage()));
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleException(Exception ex) {
-        // 500
-        return setResponseError(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR, String.format("Internal Server Error: %s", ex.getMessage()));
-    }
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<String> handleException(Exception ex) {
+//        // 500
+//        return setResponseError(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR, String.format("Internal Server Error: %s", ex.getMessage()));
+//    }
 
     private ResponseEntity<String> setResponseError(org.springframework.http.HttpStatus status, String errorMessage) {
         return ResponseEntity.status(status).body(errorMessage);

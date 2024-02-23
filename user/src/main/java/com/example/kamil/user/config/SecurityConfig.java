@@ -6,6 +6,7 @@ import com.example.kamil.user.filter.AuthorizationFilter;
 import com.example.kamil.user.model.enums.Role;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -67,11 +68,22 @@ public class SecurityConfig {
 
                     // todo: Secure http requests !
 
-                    //   Auth URLs
-                    request.requestMatchers("/v1/auth/logout").authenticated();
+                    //   Auth Controller
+                    request.requestMatchers("/v1/auth/logout").authenticated(); // todo: not implemented yet !
                     request.requestMatchers("/v1/auth/**").anonymous();//accessible to only unauthenticated users
 
+                    // User Controller
+                    request
+                            .requestMatchers(HttpMethod.DELETE ,"/v1/users/{email}").hasAnyRole(Role.ROLE_ADMIN.getValue())
+                            .requestMatchers("/v1/users/**").permitAll(); // secure these later
+//                            .anyRequest().authenticated();//todo: secure all user requests
 
+                    // User Details Controller
+                    request
+                            .requestMatchers("/v1/userDetails/**").permitAll();// secure these later
+
+
+                    // Test Controller
                     request
                             .requestMatchers("/v1/test/user").hasRole(Role.ROLE_USER.getValue())
                             .requestMatchers("/v1/test/testAdmin").hasAnyRole(Role.ROLE_ADMIN.getValue());

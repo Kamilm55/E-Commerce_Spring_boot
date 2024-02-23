@@ -35,7 +35,7 @@ public class UserController {
         return ResponseEntity.ok( userService.insertUser(userRequest));
     }
 
-    @DeleteMapping(path = "/{email}/deleteUser")
+    @DeleteMapping(path = "/{email}")
     public ResponseEntity<Void> deleteUser(@PathVariable("email") String email ){
         userService.deleteUser(email);
         return ResponseEntity.ok().build();
@@ -53,7 +53,7 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/{email}/updateUser")
+    @PutMapping("/{email}")
     public ResponseEntity<UserDTO> updateUser(@PathVariable("email") String email,@RequestBody RegisterPayload userRequest ){
         return ResponseEntity.ok(userService.updateUser(email,userRequest));
     }

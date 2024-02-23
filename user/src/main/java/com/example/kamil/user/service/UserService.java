@@ -19,5 +19,5 @@ public interface UserService {
 
     User findUserByEmail(String email);
 
-    User addAdminRole (User user);
+    //User addAdminRole (User user);
 }

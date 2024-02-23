@@ -104,16 +104,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
-    public User addAdminRole(User user) {
-        User userFromDb = findUserByEmail(user.getEmail());
-
-        userFromDb.getUserDetails().addAuthority(Role.ROLE_ADMIN);
-
-        return userRepository.save(userFromDb);
-    }
-
-    @Override
     public void deactivateUser(String email) {
         changeStatusOfUser(email,false);
     }
