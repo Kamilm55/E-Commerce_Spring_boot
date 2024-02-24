@@ -41,7 +41,7 @@ public class UserApplication implements CommandLineRunner {
 		UserDTO insertedUser = userService.insertUser(
 				RegisterPayload.builder()
 						.username("kamil")
-						.password("pass")
+						.password("password")
 						.email("email1@gmail.com")
 						.firstName("sad")
 						.lastName("dasdsad")
@@ -50,7 +50,7 @@ public class UserApplication implements CommandLineRunner {
 		UserDTO userDTO2 = userService.insertUser(
 				RegisterPayload.builder()
 						.username("admin")
-						.password("pass")
+						.password("password")
 						.email("admin@gmail.com")
 						.firstName("admin")
 						.lastName("sad")

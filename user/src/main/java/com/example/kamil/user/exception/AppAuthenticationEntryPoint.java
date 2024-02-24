@@ -21,6 +21,8 @@ public class AppAuthenticationEntryPoint implements AuthenticationEntryPoint {
         // 401
 //        System.out.println(" works");
 //        System.out.println(response.getStatus());
+
+
         if(response.getStatus() == 200)
             response.setStatus(401);
 

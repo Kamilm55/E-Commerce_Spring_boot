@@ -26,8 +26,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class UserServiceImpl implements UserService {
-
-   // private final LoggedInUserDetailsService loggedInUserDetailsService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -148,7 +146,7 @@ public class UserServiceImpl implements UserService {
                 .username(userRequest.getUsername())
                 .email(userRequest.getEmail())
                 .password(passwordEncoder.encode(userRequest.getPassword()))
-                .isActive(false)
+                .isActive(true) // it can be false ,depends on business logic
                 .userDetails(
                        LoggedInUserDetails.builder()
                         .authorities(Set.of(Role.ROLE_USER))

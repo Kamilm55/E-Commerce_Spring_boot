@@ -12,6 +12,7 @@ import com.example.kamil.user.service.security.AccessTokenManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -73,8 +74,6 @@ public class AuthBusinessServiceImpl implements AuthBusinessService{
     }
 
     private void authenticate(LoginPayload request){
-
-        try{
             authenticationManager.authenticate(
                     //Learn:
                     // This check is there any user with this credentials or not
@@ -82,13 +81,8 @@ public class AuthBusinessServiceImpl implements AuthBusinessService{
                     // and in config we set UserDetails which is fetched from db ,
                     // there is also my (userDetails) password associated with this username(email)
                     new UsernamePasswordAuthenticationToken(request.getEmail() ,request.getPassword())
+                    // this can throw AuthenticationException(bad credentials)
             );
-        }
-        catch (AuthenticationException ex){
-            // todo: add custom exception
-            // todo: fix this
 
-          log.error(ex.getMessage());
-        }
     }
 }

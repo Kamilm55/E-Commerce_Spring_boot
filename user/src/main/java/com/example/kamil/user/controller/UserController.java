@@ -3,10 +3,12 @@ package com.example.kamil.user.controller;
 import com.example.kamil.user.model.dto.UserDTO;
 import com.example.kamil.user.model.payload.RegisterPayload;
 import com.example.kamil.user.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 
@@ -31,30 +33,33 @@ public class UserController {
     }
 
     @PostMapping("/addUser")
-    public ResponseEntity<UserDTO> addUser(@RequestBody RegisterPayload userRequest){
-        return ResponseEntity.ok( userService.insertUser(userRequest));
+    public ResponseEntity<UserDTO> addUser(@RequestBody @Valid RegisterPayload userRequest){
+        return ResponseEntity
+                .created(URI.create("/v1/users/" + userRequest.getEmail()))
+                .body( userService.insertUser(userRequest));
     }
 
     @DeleteMapping(path = "/{email}")
     public ResponseEntity<Void> deleteUser(@PathVariable("email") String email ){
         userService.deleteUser(email);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{email}/deactivateUser")
     public ResponseEntity<Void> deactivateUser(@PathVariable("email") String email ){
         userService.deactivateUser(email);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{email}/activateUser")
     public ResponseEntity<Void> activateUser(@PathVariable("email") String email ){
         userService.activateUser(email);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{email}")
-    public ResponseEntity<UserDTO> updateUser(@PathVariable("email") String email,@RequestBody RegisterPayload userRequest ){
+    public ResponseEntity<UserDTO> updateUser(@PathVariable("email") String email,
+                                              @RequestBody @Valid RegisterPayload userRequest ){
         return ResponseEntity.ok(userService.updateUser(email,userRequest));
     }
 
