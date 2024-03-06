@@ -9,6 +9,7 @@ import com.example.kamil.user.model.payload.RegisterPayload;
 import com.example.kamil.user.model.entity.security.LoggedInUserDetails;
 import com.example.kamil.user.service.UserService;
 import com.example.kamil.user.service.security.AccessTokenManager;
+import com.example.kamil.user.utils.UserUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,6 +36,7 @@ public class AuthBusinessServiceImpl implements AuthBusinessService{
 
         User user = userService.getUserByEmailForUserDetails(payload.getEmail());
 
+        UserUtil.checkIsActive(user);
         return prepareLoginResponse(user);
 
     }

@@ -51,10 +51,10 @@ public class GlobalExceptionHandlerAdvice {
     public ResponseEntity<?> handleAuthenticationException(AuthenticationException exception){
         return new ResponseEntity<>(exception.getMessage(),HttpStatus.UNAUTHORIZED);
     }
-    //    @ExceptionHandler(value = AccessDeniedException.class)
-//    public ResponseEntity<?> handleUserForbidden(AccessDeniedException exception){
-//        return new ResponseEntity<>(exception.getMessage(),HttpStatus.FORBIDDEN);
-//    }
+        @ExceptionHandler(value = AccessDeniedException.class)
+    public ResponseEntity<?> handleUserForbidden(AccessDeniedException exception){
+        return new ResponseEntity<>(exception.getMessage(),HttpStatus.FORBIDDEN);
+    }
 
     // Validation exceptions
     // Learn:

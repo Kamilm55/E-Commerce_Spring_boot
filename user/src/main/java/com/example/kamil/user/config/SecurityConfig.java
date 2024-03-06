@@ -74,6 +74,8 @@ public class SecurityConfig {
 
                     // User Controller
                     request
+//                            .requestMatchers(HttpMethod.PUT,"/v1/users/**").authenticated() //todo: only same user send request
+//                            .requestMatchers("/v1/users/**").
                             .requestMatchers("/v1/users/**").permitAll(); // secure these later
 //                            .anyRequest().authenticated();//todo: secure all user requests
 

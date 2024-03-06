@@ -11,10 +11,12 @@ import com.example.kamil.user.model.payload.RegisterPayload;
 import com.example.kamil.user.model.entity.security.LoggedInUserDetails;
 import com.example.kamil.user.repository.UserRepository;
 import com.example.kamil.user.service.UserService;
+import com.example.kamil.user.utils.UserUtil;
 import com.example.kamil.user.utils.converter.UserDTOConverter;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +34,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO getUserByEmail(String email) {
         User user = findUserByEmail(email);
+        UserUtil.checkIsActive(user);
 
         return UserDTOConverter.convert(user);
      }
@@ -57,10 +60,7 @@ public class UserServiceImpl implements UserService {
     public UserDTO updateUser(String email, RegisterPayload userRequest) {
         User userFromDB = findUserByEmail(email);
 
-        if(!userFromDB.getIsActive()){
-            log.warn(String.format("User with email: %s is not active!",email));
-            throw new UserIsNotActiveException();
-        }
+      UserUtil.checkIsActive(userFromDB);
 
         validateForUpdate(userFromDB,userRequest);
 
@@ -102,7 +102,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void deactivateUser(String email) {
+        User user = findUserByEmail(email);
+        if (user.getUserDetails().getAuthorities().contains(Role.ROLE_ADMIN)) {
+            throw new AccessDeniedException("You cannot deactivate/delete user with admin role.\nYou can achieve through db manually!");
+        }
         changeStatusOfUser(email,false);
     }
 

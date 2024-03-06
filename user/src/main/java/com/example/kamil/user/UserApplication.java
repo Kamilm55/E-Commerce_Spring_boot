@@ -1,17 +1,12 @@
 package com.example.kamil.user;
 
-import com.example.kamil.user.controller.TestControllerUser;
 import com.example.kamil.user.model.dto.UserDTO;
-import com.example.kamil.user.model.entity.User;
-import com.example.kamil.user.model.entity.security.LoggedInUserDetails;
 import com.example.kamil.user.model.payload.RegisterPayload;
 import com.example.kamil.user.repository.LoggedInUserDetailsRepository;
 import com.example.kamil.user.repository.UserRepository;
 import com.example.kamil.user.service.LoggedInUserDetailsService;
 import com.example.kamil.user.service.UserService;
-import com.example.kamil.user.utils.PublicPrivateKeyUtil;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.Hibernate;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -59,7 +54,7 @@ public class UserApplication implements CommandLineRunner {
 
 //		// ADD ADMIN ROLE
 //		User user2 = userService.getUserByEmailForUserDetails(userDTO2.getEmail());
-//		User addAdminRole = userService.addAdminRole(user2);
+		 loggedInUserDetailsService.addAdminRole(userDTO2.getEmail());
 
 		// GET DETAILS OF USERS
 		// Learn: We can get lazy loaded field with the help of query

@@ -41,11 +41,11 @@ public class LoggedInUserDetailsController {
         loggedInUserDetailsService.addAdminRole(email);
         return ResponseEntity.noContent().build();
     }
-    @PatchMapping("/{email}/deleteAdminRole")
-    public ResponseEntity<Void> deleteAdminRole(@PathVariable("email") String email){
-        loggedInUserDetailsService.deleteAdminRole(email);
-        return ResponseEntity.noContent().build();
-    }
+//    @PatchMapping("/{email}/deleteAdminRole")
+//    public ResponseEntity<Void> deleteAdminRole(@PathVariable("email") String email){
+//        loggedInUserDetailsService.deleteAdminRole(email);
+//        return ResponseEntity.noContent().build();
+//    }
 
     @PatchMapping("/{email}/addVendorRole")
     public ResponseEntity<Void> addVendorRole(@PathVariable("email") String email){

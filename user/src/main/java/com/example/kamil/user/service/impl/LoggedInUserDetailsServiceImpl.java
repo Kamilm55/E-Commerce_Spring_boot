@@ -8,6 +8,7 @@ import com.example.kamil.user.model.payload.UpdateUserDetailsPayload;
 import com.example.kamil.user.repository.LoggedInUserDetailsRepository;
 import com.example.kamil.user.service.LoggedInUserDetailsService;
 import com.example.kamil.user.service.UserService;
+import com.example.kamil.user.utils.UserUtil;
 import com.example.kamil.user.utils.converter.LoggedInUserDetailsDTOConverter;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class LoggedInUserDetailsServiceImpl implements LoggedInUserDetailsServic
     @Transactional
     public LoggedInUserDetailsDTO getUserDetailsByEmail(String email) {
         LoggedInUserDetails userDetails = getUserDetails(email);
+        checkActive(email);
 
         return LoggedInUserDetailsDTOConverter.convert(userDetails);
     }
@@ -38,6 +40,7 @@ public class LoggedInUserDetailsServiceImpl implements LoggedInUserDetailsServic
     public LoggedInUserDetailsDTO updateUserUserDetails(String email, UpdateUserDetailsPayload updateUserDetailsPayload) {
         LoggedInUserDetails userDetails = getUserDetails(email);
 
+        checkActive(email);
         setUserDetails(updateUserDetailsPayload, userDetails);
 
         return LoggedInUserDetailsDTOConverter.convert(userDetailsRepository.save(userDetails));
@@ -46,27 +49,35 @@ public class LoggedInUserDetailsServiceImpl implements LoggedInUserDetailsServic
     @Override
     @Transactional
     public void addAdminRole(String email) {
+        checkActive(email);
         addSpecificRole(email,Role.ROLE_ADMIN);
     }
 
     @Override
     @Transactional
     public void deleteAdminRole(String email) {
+        checkActive(email);
         deleteSpecificRole(email,Role.ROLE_ADMIN);
     }
     @Override
     @Transactional
     public void addVendorRole(String email) {
+        checkActive(email);
         addSpecificRole(email,Role.ROLE_VENDOR);
     }
 
     @Override
     @Transactional
     public void deleteVendorRole(String email) {
+        checkActive(email);
         deleteSpecificRole(email,Role.ROLE_VENDOR);
     }
 
     //
+    private void checkActive(String email) {
+        User user = userService.findUserByEmail(email);
+        UserUtil.checkIsActive(user);
+    }
     private void deleteSpecificRole(String email,Role role) {
         modifyUserRole(email,role,false);
     }
