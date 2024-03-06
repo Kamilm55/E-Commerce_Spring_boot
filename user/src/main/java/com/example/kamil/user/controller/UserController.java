@@ -39,11 +39,14 @@ public class UserController {
                 .body( userService.insertUser(userRequest));
     }
 
-    @DeleteMapping(path = "/{email}")
-    public ResponseEntity<Void> deleteUser(@PathVariable("email") String email ){
-        userService.deleteUser(email);
-        return ResponseEntity.noContent().build();
-    }
+//    @DeleteMapping(path = "/{email}")
+//    public ResponseEntity<Void> deleteUser(@PathVariable("email") String email ){
+//        userService.deleteUser(email);
+//        // TODO: you cannot delete user which is admin
+            // Learn: I use soft deletion. use Deactivate method if you want to delete
+            //  Consider implementing a soft deletion mechanism. Instead of immediately deleting a user and their associated data, mark the user as inactive or deleted. This way, you retain information about the user for audit purposes and can potentially restore the account if needed
+//        return ResponseEntity.noContent().build();
+//    }
 
     @PatchMapping("/{email}/deactivateUser")
     public ResponseEntity<Void> deactivateUser(@PathVariable("email") String email ){

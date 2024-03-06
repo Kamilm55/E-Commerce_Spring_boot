@@ -90,7 +90,6 @@ public class GlobalExceptionHandlerAdvice {
     // For unhandled exceptions:
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<?> generalExceptionHandler(Exception exception){
-        System.out.println("isledi!");
         return new ResponseEntity<>(exception.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

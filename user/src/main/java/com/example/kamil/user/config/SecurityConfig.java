@@ -74,7 +74,6 @@ public class SecurityConfig {
 
                     // User Controller
                     request
-                            .requestMatchers(HttpMethod.DELETE ,"/v1/users/{email}").hasAnyRole(Role.ROLE_ADMIN.getValue())
                             .requestMatchers("/v1/users/**").permitAll(); // secure these later
 //                            .anyRequest().authenticated();//todo: secure all user requests
 
