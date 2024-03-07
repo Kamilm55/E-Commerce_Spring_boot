@@ -32,7 +32,7 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserByEmail(email));
     }
 
-    @PostMapping("/addUser")
+    @PostMapping()
     public ResponseEntity<UserDTO> addUser(@RequestBody @Valid RegisterPayload userRequest){
         return ResponseEntity
                 .created(URI.create("/v1/users/" + userRequest.getEmail()))

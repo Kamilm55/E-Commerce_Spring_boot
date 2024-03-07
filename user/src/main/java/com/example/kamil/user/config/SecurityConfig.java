@@ -74,14 +74,15 @@ public class SecurityConfig {
 
                     // User Controller
                     request
-//                            .requestMatchers(HttpMethod.PUT,"/v1/users/**").authenticated() //todo: only same user send request
-//                            .requestMatchers("/v1/users/**").
-                            .requestMatchers("/v1/users/**").permitAll(); // secure these later
-//                            .anyRequest().authenticated();//todo: secure all user requests
+                            .requestMatchers(HttpMethod.PUT,"/v1/users/{email}").authenticated()
+                            .requestMatchers(HttpMethod.POST,"/v1/users/{email}").hasRole(Role.ROLE_ADMIN.getValue())
+                            .requestMatchers("/v1/users/{email}/deactivateUser").authenticated()// if user has role admin it can deactivate any user except other admins , i do inside service method
+                            .requestMatchers("/v1/users/{email}/activateUser").authenticated()
+                            .requestMatchers("/v1/users/**").permitAll();
 
                     // User Details Controller
                     request
-                            .requestMatchers("/v1/userDetails/**").permitAll();// secure these later
+                            .requestMatchers("/v1/userDetails/**").permitAll();// todo: secure these later
 
 
                     // Test Controller

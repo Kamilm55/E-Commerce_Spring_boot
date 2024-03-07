@@ -1,11 +1,10 @@
 package com.example.kamil.user.exception;
 
-import com.example.kamil.user.exception.customExceptions.UserIsAlreadyExistsWithThisEmailException;
-import com.example.kamil.user.exception.customExceptions.UserIsAlreadyExistsWithThisUsernameException;
-import com.example.kamil.user.exception.customExceptions.UserIsNotActiveException;
-import com.example.kamil.user.exception.customExceptions.UserNotFoundException;
+import com.example.kamil.user.exception.customExceptions.*;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -40,6 +39,10 @@ public class GlobalExceptionHandlerAdvice {
     public ResponseEntity<?> handleUserIsAlreadyExistsWithThisUsername(UserIsAlreadyExistsWithThisUsernameException exception){
         return new ResponseEntity<>(exception.getMessage(),HttpStatus.CONFLICT);
     }
+    @ExceptionHandler(value = PermissionDeniedException.class)
+    public ResponseEntity<?> handlePermissionDeniedException(PermissionDeniedException exception){
+        return new ResponseEntity<>(exception.getMessage(),HttpStatus.FORBIDDEN);
+    }
 
 
     // Auth Exceptions
@@ -51,7 +54,7 @@ public class GlobalExceptionHandlerAdvice {
     public ResponseEntity<?> handleAuthenticationException(AuthenticationException exception){
         return new ResponseEntity<>(exception.getMessage(),HttpStatus.UNAUTHORIZED);
     }
-        @ExceptionHandler(value = AccessDeniedException.class)
+    @ExceptionHandler(value = AccessDeniedException.class)
     public ResponseEntity<?> handleUserForbidden(AccessDeniedException exception){
         return new ResponseEntity<>(exception.getMessage(),HttpStatus.FORBIDDEN);
     }
@@ -88,8 +91,9 @@ public class GlobalExceptionHandlerAdvice {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
     // For unhandled exceptions:
-    @ExceptionHandler(value = Exception.class)
-    public ResponseEntity<?> generalExceptionHandler(Exception exception){
-        return new ResponseEntity<>(exception.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+//    @ExceptionHandler(value = Exception.class)
+//    public ResponseEntity<?> generalExceptionHandler(Exception exception){
+//        System.out.println("For unhandled exceptions");
+//        return new ResponseEntity<>(exception.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+//    }
 }

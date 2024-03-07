@@ -1,11 +1,8 @@
 package com.example.kamil.user.service.impl;
 
+import com.example.kamil.user.exception.customExceptions.*;
 import com.example.kamil.user.model.dto.UserDTO;
 import com.example.kamil.user.model.entity.User;
-import com.example.kamil.user.exception.customExceptions.UserIsAlreadyExistsWithThisEmailException;
-import com.example.kamil.user.exception.customExceptions.UserIsAlreadyExistsWithThisUsernameException;
-import com.example.kamil.user.exception.customExceptions.UserIsNotActiveException;
-import com.example.kamil.user.exception.customExceptions.UserNotFoundException;
 import com.example.kamil.user.model.enums.Role;
 import com.example.kamil.user.model.payload.RegisterPayload;
 import com.example.kamil.user.model.entity.security.LoggedInUserDetails;
@@ -17,6 +14,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -57,10 +55,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserDTO updateUser(String email, RegisterPayload userRequest) {
         User userFromDB = findUserByEmail(email);
+        checkUserIsSameWithAuthenticatedUser(email);
 
-      UserUtil.checkIsActive(userFromDB);
+        UserUtil.checkIsActive(userFromDB);
 
         validateForUpdate(userFromDB,userRequest);
 
@@ -105,19 +105,50 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void deactivateUser(String email) {
         User user = findUserByEmail(email);
-        if (user.getUserDetails().getAuthorities().contains(Role.ROLE_ADMIN)) {
-            throw new AccessDeniedException("You cannot deactivate/delete user with admin role.\nYou can achieve through db manually!");
-        }
-        changeStatusOfUser(email,false);
+        validateDeactivationPermissions(email, user);
+        changeStatusOfUser(email, false);
     }
 
     @Override
+    @Transactional
     public void activateUser(String email) {
-        changeStatusOfUser(email,true);
+        User user = findUserByEmail(email);
+        validateActivationPermissions(user);
+        changeStatusOfUser(email, true);
+    }
+
+    // Util methods
+    private void validateDeactivationPermissions(String email, User user) {
+        LoggedInUserDetails authenticatedUser = getAuthenticatedUser();
+
+        if (!authenticatedUser.getAuthorities().contains(Role.ROLE_ADMIN)) {
+            checkUserIsSameWithAuthenticatedUser(email);
+        }
+
+        if (user.getUserDetails().getAuthorities().contains(Role.ROLE_ADMIN)) {
+            throw new PermissionDeniedException("You cannot deactivate/delete user with admin role.\nYou can achieve through db manually!");
+        }
+    }
+
+    private void validateActivationPermissions(User user) {
+        if (user.getUserDetails().getAuthorities().contains(Role.ROLE_ADMIN)) {
+            throw new PermissionDeniedException("You cannot activate user with admin role.\nYou can achieve through db manually!");
+        }
+    }
+
+    private LoggedInUserDetails getAuthenticatedUser() {
+        return (LoggedInUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
 
-    // Util methods
+    // it must be used with @transactional annotation , because we call lazy obj authenticatedUser.getUser()
+    private void checkUserIsSameWithAuthenticatedUser(String email) {
+        // Check that is updated user same with current user?
+        LoggedInUserDetails authenticatedUser = (LoggedInUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (!authenticatedUser.getUser().getEmail().equals(email)) {
+            throw new PermissionDeniedException("You cannot update / deactivate other user information!");
+        }
+    }
     private void validateForUpdate(User currentUser, RegisterPayload userRequest) {
         String emailFromRequest = userRequest.getEmail();
         String usernameFromRequest = userRequest.getUsername();
