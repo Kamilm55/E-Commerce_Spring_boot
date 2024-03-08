@@ -1,5 +1,6 @@
 package com.example.kamil.user.controller;
 
+import com.example.kamil.common.response.BaseResponse;
 import com.example.kamil.user.model.dto.LoginResponse;
 import com.example.kamil.user.model.payload.LoginPayload;
 import com.example.kamil.user.model.payload.RegisterPayload;
@@ -24,23 +25,24 @@ import java.net.URI;
 public class AuthController {
     private final AuthBusinessService authBusinessService;
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody @Valid LoginPayload payload){
-        return ResponseEntity.ok(authBusinessService.login(payload));
+    public BaseResponse<LoginResponse> login(@RequestBody @Valid LoginPayload payload){
+        return BaseResponse.success(authBusinessService.login(payload));
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Void> register(@RequestBody @Valid RegisterPayload payload){
+    public BaseResponse<Void> register(@RequestBody @Valid RegisterPayload payload){
         authBusinessService.register(payload);
 
-        return ResponseEntity.created(URI.create("/v1/users/" + payload.getEmail())).build();
+        //refactorThis: convert into => CREATED(custom message) httpStatus 201 ResponseEntity.created(URI.create("/v1/users/" + payload.getEmail())).build();
+        return BaseResponse.success();
     }
 
     //////
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response){
+    public BaseResponse<Void> logout(HttpServletRequest request, HttpServletResponse response){
       //TODO:IMPLEMENT this
 
-        return ResponseEntity.ok().build();
+        return BaseResponse.success();
     }
 }

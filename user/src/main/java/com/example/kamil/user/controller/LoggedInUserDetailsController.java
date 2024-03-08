@@ -1,5 +1,6 @@
 package com.example.kamil.user.controller;
 
+import com.example.kamil.common.response.BaseResponse;
 import com.example.kamil.user.model.dto.LoggedInUserDetailsDTO;
 import com.example.kamil.user.model.payload.UpdateUserDetailsPayload;
 import com.example.kamil.user.service.LoggedInUserDetailsService;
@@ -22,40 +23,41 @@ public class LoggedInUserDetailsController {
 //    }
 
     @GetMapping("/{email}")
-    public ResponseEntity<LoggedInUserDetailsDTO> getUserDetails(
+    public BaseResponse<LoggedInUserDetailsDTO> getUserDetails(
             @PathVariable("email")
             String email)
     {
-        return ResponseEntity.ok(loggedInUserDetailsService.getUserDetailsByEmail(email));
+        return BaseResponse.success(loggedInUserDetailsService.getUserDetailsByEmail(email));
     }
 
     @PutMapping("/{email}")
-    public ResponseEntity<LoggedInUserDetailsDTO> updateUser(
+    public BaseResponse<LoggedInUserDetailsDTO> updateUser(
             @PathVariable("email") String email,
             @RequestBody @Valid UpdateUserDetailsPayload updateUserDetailsPayload ){
-        return ResponseEntity.ok(loggedInUserDetailsService.updateUserUserDetails(email,updateUserDetailsPayload));
+        return BaseResponse.success(loggedInUserDetailsService.updateUserUserDetails(email,updateUserDetailsPayload));
     }
 
     @PatchMapping("/{email}/addAdminRole")
-    public ResponseEntity<Void> addAdminRole(@PathVariable("email") String email){
+    public BaseResponse<Void> addAdminRole(@PathVariable("email") String email){
         loggedInUserDetailsService.addAdminRole(email);
-        return ResponseEntity.noContent().build();
+        //refactorThis: status code must be 204 , ResponseEntity.noContent().build()
+        return BaseResponse.success();
     }
     @PatchMapping("/{email}/deleteAdminRole")
-    public ResponseEntity<Void> deleteAdminRole(@PathVariable("email") String email){
+    public BaseResponse<Void> deleteAdminRole(@PathVariable("email") String email){
         loggedInUserDetailsService.deleteAdminRole(email);
-        return ResponseEntity.noContent().build();
+        return BaseResponse.success();
     }
 
     @PatchMapping("/{email}/addVendorRole")
-    public ResponseEntity<Void> addVendorRole(@PathVariable("email") String email){
+    public BaseResponse<Void> addVendorRole(@PathVariable("email") String email){
         loggedInUserDetailsService.addVendorRole(email);
-        return ResponseEntity.noContent().build();
+        return BaseResponse.success();
     }
     @PatchMapping("/{email}/deleteVendorRole")
-    public ResponseEntity<Void> deleteVendorRole(@PathVariable("email") String email){
+    public BaseResponse<Void> deleteVendorRole(@PathVariable("email") String email){
         loggedInUserDetailsService.deleteVendorRole(email);
-        return ResponseEntity.noContent().build();
+        return BaseResponse.success();
     }
 
 }

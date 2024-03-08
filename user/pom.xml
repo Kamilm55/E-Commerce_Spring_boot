@@ -27,7 +27,12 @@
 			<scope>test</scope>
 		</dependency>
 
-
+		<!--Add common module-->
+		<dependency>
+			<groupId>com.example.kamil</groupId>
+			<artifactId>common</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 
 	</dependencies>
 

@@ -1,5 +1,6 @@
 package com.example.kamil.user.controller;
 
+import com.example.kamil.common.response.BaseResponse;
 import com.example.kamil.user.model.dto.UserDTO;
 import com.example.kamil.user.model.payload.RegisterPayload;
 import com.example.kamil.user.service.UserService;
@@ -19,24 +20,25 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/getAllUsers")
-    public ResponseEntity<List<UserDTO>> getAll(){
-        return ResponseEntity.ok(userService.getAll());
+    public BaseResponse<List<UserDTO>> getAll(){
+        return BaseResponse.success(userService.getAll());
     }
     @GetMapping("/getActiveUsers")
-    public ResponseEntity<List<UserDTO>> getActiveUsers(){
-        return ResponseEntity.ok(userService.getActiveUsers());
+    public BaseResponse<List<UserDTO>> getActiveUsers(){
+        return BaseResponse.success(userService.getActiveUsers());
     }
 
     @GetMapping("/{email}")
-    public ResponseEntity<UserDTO> getUser(@PathVariable("email") String email){
-        return ResponseEntity.ok(userService.getUserByEmail(email));
+    public BaseResponse<UserDTO> getUser(@PathVariable("email") String email){
+        return BaseResponse.success(userService.getUserByEmail(email));
     }
 
     @PostMapping()
-    public ResponseEntity<UserDTO> addUser(@RequestBody @Valid RegisterPayload userRequest){
-        return ResponseEntity
-                .created(URI.create("/v1/users/" + userRequest.getEmail()))
-                .body( userService.insertUser(userRequest));
+    public BaseResponse<UserDTO> addUser(@RequestBody @Valid RegisterPayload userRequest){
+        // refactorThis => 201 =>  ResponseEntity
+        //                .created(URI.create("/v1/users/" + userRequest.getEmail()))
+        //                .body( userService.insertUser(userRequest))
+        return BaseResponse.success();
     }
 
 //    @DeleteMapping(path = "/{email}")
@@ -49,21 +51,22 @@ public class UserController {
 //    }
 
     @PatchMapping("/{email}/deactivateUser")
-    public ResponseEntity<Void> deactivateUser(@PathVariable("email") String email ){
+    public BaseResponse<Void> deactivateUser(@PathVariable("email") String email ){
         userService.deactivateUser(email);
-        return ResponseEntity.noContent().build();
+        //refactorThis:204
+        return  BaseResponse.success();
     }
 
     @PatchMapping("/{email}/activateUser")
-    public ResponseEntity<Void> activateUser(@PathVariable("email") String email ){
+    public BaseResponse<Void> activateUser(@PathVariable("email") String email ){
         userService.activateUser(email);
-        return ResponseEntity.noContent().build();
+        return  BaseResponse.success();
     }
 
     @PutMapping("/{email}")
-    public ResponseEntity<UserDTO> updateUser(@PathVariable("email") String email,
+    public BaseResponse<UserDTO> updateUser(@PathVariable("email") String email,
                                               @RequestBody @Valid RegisterPayload userRequest ){
-        return ResponseEntity.ok(userService.updateUser(email,userRequest));
+        return  BaseResponse.success(userService.updateUser(email,userRequest));
     }
 
 
