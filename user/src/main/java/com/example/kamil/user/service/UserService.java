@@ -2,6 +2,7 @@ package com.example.kamil.user.service;
 
 import com.example.kamil.user.model.dto.UserDTO;
 import com.example.kamil.user.model.entity.User;
+import com.example.kamil.user.model.entity.security.LoggedInUserDetails;
 import com.example.kamil.user.model.payload.RegisterPayload;
 
 import java.util.List;
@@ -19,5 +20,8 @@ public interface UserService {
 
     User findUserByEmail(String email);
 
-    //User addAdminRole (User user);
+    void checkUserIsSameWithAuthenticatedUser(String email,String exMessage);
+
+    LoggedInUserDetails getAuthenticatedUser();
+
 }

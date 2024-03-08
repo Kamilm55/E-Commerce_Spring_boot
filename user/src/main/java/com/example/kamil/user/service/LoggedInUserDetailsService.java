@@ -15,6 +15,7 @@ public interface LoggedInUserDetailsService {
     LoggedInUserDetailsDTO getUserDetailsByEmail(String email);
     LoggedInUserDetailsDTO updateUserUserDetails(String email, UpdateUserDetailsPayload updateUserDetailsPayload);
     void addAdminRole(String email);
+    void addSuperAdminRole(String email);
     void deleteAdminRole(String email);
     void addVendorRole(String email);
     void deleteVendorRole(String email);

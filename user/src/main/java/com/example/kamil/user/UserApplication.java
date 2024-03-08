@@ -52,9 +52,21 @@ public class UserApplication implements CommandLineRunner {
 						.build()
 		);
 
+		UserDTO superAdmin = userService.insertUser(
+				RegisterPayload.builder()
+						.username("superAdmin")
+						.password("password")
+						.email("superAdmin@gmail.com")
+						.firstName("super")
+						.lastName("Admin")
+						.build()
+		);
 //		// ADD ADMIN ROLE
 //		User user2 = userService.getUserByEmailForUserDetails(userDTO2.getEmail());
 		 loggedInUserDetailsService.addAdminRole(userDTO2.getEmail());
+		// ADD SUPER ADMIN ROLE
+		loggedInUserDetailsService.addSuperAdminRole(superAdmin.getEmail());
+
 
 		// GET DETAILS OF USERS
 		// Learn: We can get lazy loaded field with the help of query

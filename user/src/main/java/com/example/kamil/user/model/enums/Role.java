@@ -8,7 +8,8 @@ public enum Role implements GrantedAuthority {
 
     ROLE_USER("USER"),
     ROLE_ADMIN("ADMIN"),
-    ROLE_CUSTOMER("CUSTOMER"),
+    ROLE_SUPER_ADMIN("SUPER_ADMIN"),
+    //ROLE_CUSTOMER("CUSTOMER"),
     ROLE_VENDOR("VENDOR");
 
     private final String value;

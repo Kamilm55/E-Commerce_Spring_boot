@@ -21,6 +21,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 
 @Configuration
 public class SecurityConfig {
@@ -44,7 +46,6 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
-
 
     @Bean
     public AuthenticationEntryPoint authenticationEntryPoint() {
@@ -78,10 +79,18 @@ public class SecurityConfig {
                             .requestMatchers(HttpMethod.POST,"/v1/users/{email}").hasRole(Role.ROLE_ADMIN.getValue())
                             .requestMatchers("/v1/users/{email}/deactivateUser").authenticated()// if user has role admin it can deactivate any user except other admins , i do inside service method
                             .requestMatchers("/v1/users/{email}/activateUser").authenticated()
+                            .requestMatchers(HttpMethod.GET,"/v1/users/getAllUsers").hasRole(Role.ROLE_ADMIN.getValue())
+                            .requestMatchers(HttpMethod.GET,"/v1/users/getActiveUsers").hasRole(Role.ROLE_ADMIN.getValue())
                             .requestMatchers("/v1/users/**").permitAll();
 
                     // User Details Controller
                     request
+                            .requestMatchers(HttpMethod.GET,"/v1/userDetails/{email}").authenticated()
+                            .requestMatchers(HttpMethod.PUT,"/v1/userDetails/{email}").authenticated()
+                            .requestMatchers(HttpMethod.PATCH,"/v1/userDetails/{email}/deleteVendorRole").hasRole(Role.ROLE_ADMIN.getValue())
+                            .requestMatchers(HttpMethod.PATCH,"/v1/userDetails/{email}/addVendorRole").hasRole(Role.ROLE_ADMIN.getValue())
+                            .requestMatchers(HttpMethod.PATCH,"/v1/userDetails/{email}/addAdminRole").hasRole(Role.ROLE_SUPER_ADMIN.getValue())
+                            .requestMatchers(HttpMethod.PATCH,"/v1/userDetails/{email}/deleteAdminRole").hasRole(Role.ROLE_SUPER_ADMIN.getValue())
                             .requestMatchers("/v1/userDetails/**").permitAll();// todo: secure these later
 
 

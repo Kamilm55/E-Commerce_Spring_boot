@@ -32,6 +32,12 @@ public class LoggedInUserDetailsServiceImpl implements LoggedInUserDetailsServic
         LoggedInUserDetails userDetails = getUserDetails(email);
         checkActive(email);
 
+        LoggedInUserDetails authenticatedUser = userService.getAuthenticatedUser();
+
+        if (!authenticatedUser.getAuthorities().contains(Role.ROLE_ADMIN)) {
+            userService.checkUserIsSameWithAuthenticatedUser(email,"You cannot get other user information!");
+        }
+
         return LoggedInUserDetailsDTOConverter.convert(userDetails);
     }
 
@@ -41,6 +47,7 @@ public class LoggedInUserDetailsServiceImpl implements LoggedInUserDetailsServic
         LoggedInUserDetails userDetails = getUserDetails(email);
 
         checkActive(email);
+        userService.checkUserIsSameWithAuthenticatedUser(email,"You update get other user information!");
         setUserDetails(updateUserDetailsPayload, userDetails);
 
         return LoggedInUserDetailsDTOConverter.convert(userDetailsRepository.save(userDetails));
@@ -51,6 +58,13 @@ public class LoggedInUserDetailsServiceImpl implements LoggedInUserDetailsServic
     public void addAdminRole(String email) {
         checkActive(email);
         addSpecificRole(email,Role.ROLE_ADMIN);
+    }
+
+    @Override
+    @Transactional
+    public void addSuperAdminRole(String email) {
+        checkActive(email);
+        addSpecificRole(email,Role.ROLE_SUPER_ADMIN);
     }
 
     @Override

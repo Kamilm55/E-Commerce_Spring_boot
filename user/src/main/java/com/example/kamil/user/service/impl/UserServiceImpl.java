@@ -58,7 +58,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDTO updateUser(String email, RegisterPayload userRequest) {
         User userFromDB = findUserByEmail(email);
-        checkUserIsSameWithAuthenticatedUser(email);
+        checkUserIsSameWithAuthenticatedUser(email,"You cannot update other user information!");
 
         UserUtil.checkIsActive(userFromDB);
 
@@ -117,12 +117,25 @@ public class UserServiceImpl implements UserService {
         changeStatusOfUser(email, true);
     }
 
+    //
+    // It must be used with @transactional annotation , because we call lazy obj authenticatedUser.getUser()
+    public void checkUserIsSameWithAuthenticatedUser(String email,String exMessage) {
+        // Check that is updated user same with current user?
+        LoggedInUserDetails authenticatedUser = (LoggedInUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (!authenticatedUser.getUser().getEmail().equals(email)) {
+            throw new PermissionDeniedException(exMessage);
+        }
+    }
+
+    public LoggedInUserDetails getAuthenticatedUser() {
+        return (LoggedInUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
     // Util methods
     private void validateDeactivationPermissions(String email, User user) {
         LoggedInUserDetails authenticatedUser = getAuthenticatedUser();
 
         if (!authenticatedUser.getAuthorities().contains(Role.ROLE_ADMIN)) {
-            checkUserIsSameWithAuthenticatedUser(email);
+            checkUserIsSameWithAuthenticatedUser(email,"You cannot deactivate/delete other user information!");
         }
 
         if (user.getUserDetails().getAuthorities().contains(Role.ROLE_ADMIN)) {
@@ -136,19 +149,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private LoggedInUserDetails getAuthenticatedUser() {
-        return (LoggedInUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    }
-
-
-    // it must be used with @transactional annotation , because we call lazy obj authenticatedUser.getUser()
-    private void checkUserIsSameWithAuthenticatedUser(String email) {
-        // Check that is updated user same with current user?
-        LoggedInUserDetails authenticatedUser = (LoggedInUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (!authenticatedUser.getUser().getEmail().equals(email)) {
-            throw new PermissionDeniedException("You cannot update / deactivate other user information!");
-        }
-    }
     private void validateForUpdate(User currentUser, RegisterPayload userRequest) {
         String emailFromRequest = userRequest.getEmail();
         String usernameFromRequest = userRequest.getUsername();
