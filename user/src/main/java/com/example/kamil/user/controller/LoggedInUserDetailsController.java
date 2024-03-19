@@ -59,5 +59,11 @@ public class LoggedInUserDetailsController {
         loggedInUserDetailsService.deleteVendorRole(email);
         return BaseResponse.success();
     }
+    //
+    @PatchMapping("/{email}/requestForVendorRole")
+    public BaseResponse<Void> requestForVendorRole(@PathVariable("email") String email){
+        loggedInUserDetailsService.requestForVendorRole(email);
+        return BaseResponse.success();
+    }
 
 }

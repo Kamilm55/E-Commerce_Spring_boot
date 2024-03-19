@@ -47,7 +47,7 @@ public class LoggedInUserDetailsServiceImpl implements LoggedInUserDetailsServic
         LoggedInUserDetails userDetails = getUserDetails(email);
 
         checkActive(email);
-        userService.checkUserIsSameWithAuthenticatedUser(email,"You update get other user information!");
+        userService.checkUserIsSameWithAuthenticatedUser(email,"You cannot update  other user information!");
         setUserDetails(updateUserDetailsPayload, userDetails);
 
         return LoggedInUserDetailsDTOConverter.convert(userDetailsRepository.save(userDetails));
@@ -85,6 +85,28 @@ public class LoggedInUserDetailsServiceImpl implements LoggedInUserDetailsServic
     public void deleteVendorRole(String email) {
         checkActive(email);
         deleteSpecificRole(email,Role.ROLE_VENDOR);
+    }
+
+    @Override
+    @Transactional
+    public void requestForVendorRole(String email) { //TODO: security config =>only ROlE.USER
+        checkActive(email);
+        userService.checkUserIsSameWithAuthenticatedUser(email,"You cannot send request for other user information!");
+        // we sure that user sends request for own and user is active
+
+        //todo: check isRequestRejected (for db) and if application is valid then continue
+
+        //todo:rabbit mq sends notifications to all admins , if any admin accept role must be Vendor
+    }
+
+    @Override
+    public void approveVendorRequest(String email) {
+        //todo: implement
+    }
+
+    @Override
+    public void rejectVendorRequest(String email) {
+        //todo: implement
     }
 
     //

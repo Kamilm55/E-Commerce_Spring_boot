@@ -5,16 +5,14 @@ import com.example.kamil.user.model.dto.LoginResponse;
 import com.example.kamil.user.model.payload.LoginPayload;
 import com.example.kamil.user.model.payload.RegisterPayload;
 import com.example.kamil.user.service.auth.AuthBusinessService;
+import com.example.kamil.user.service.auth.TokenBlacklistService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
@@ -24,6 +22,7 @@ import java.net.URI;
 @Slf4j
 public class AuthController {
     private final AuthBusinessService authBusinessService;
+    private final TokenBlacklistService tokenBlacklistService;
     @PostMapping("/login")
     public BaseResponse<LoginResponse> login(@RequestBody @Valid LoginPayload payload){
         return BaseResponse.success(authBusinessService.login(payload));
@@ -34,15 +33,14 @@ public class AuthController {
         authBusinessService.register(payload);
 
         //refactorThis: convert into => CREATED(custom message) httpStatus 201 ResponseEntity.created(URI.create("/v1/users/" + payload.getEmail())).build();
+        // and add direct login after successful registering
         return BaseResponse.success();
     }
-
-    //////
-
     @PostMapping("/logout")
-    public BaseResponse<Void> logout(HttpServletRequest request, HttpServletResponse response){
-      //TODO:IMPLEMENT this
-
+    public BaseResponse<Void> logout(HttpServletRequest request){
+      ///*@RequestHeader("Authorization") String token*/
+        String token = request.getHeader("Authorization");
+        tokenBlacklistService.addToBlacklist(token);
         return BaseResponse.success();
     }
 }

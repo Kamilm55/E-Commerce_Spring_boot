@@ -19,8 +19,11 @@ public interface LoggedInUserDetailsService {
     void deleteAdminRole(String email);
     void addVendorRole(String email);
     void deleteVendorRole(String email);
+    void requestForVendorRole(String email);//user role
+    void approveVendorRequest(String email);//admin role
+    void rejectVendorRequest(String email);//admin role
 
 
 
-  // List<LoggedInUserDetailsDTO> getAll();
+    // List<LoggedInUserDetailsDTO> getAll();
 }

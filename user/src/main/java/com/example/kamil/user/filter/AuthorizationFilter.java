@@ -2,6 +2,7 @@ package com.example.kamil.user.filter;
 
 
 import com.example.kamil.user.service.auth.AuthBusinessService;
+import com.example.kamil.user.service.auth.TokenBlacklistService;
 import com.example.kamil.user.service.security.AccessTokenManager;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -24,6 +25,7 @@ import java.io.IOException;
 public class AuthorizationFilter extends OncePerRequestFilter {
     private final AccessTokenManager accessTokenManager;
     private final AuthBusinessService authBusinessService;
+    private final TokenBlacklistService tokenBlacklistService;
 
     //Learn:
     // Token Authorization Logic:
@@ -40,7 +42,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
         System.out.println("FILTER WORKS");
         try {
             String TOKEN_PREFIX = "Bearer ";
-            if(token != null && token.startsWith(TOKEN_PREFIX)){
+            if(token != null && token.startsWith(TOKEN_PREFIX) && !tokenBlacklistService.isBlacklisted(token)){
                 Claims claims = accessTokenManager.read( token.substring(7));
                 String email = claims.get("email", String.class);
 
