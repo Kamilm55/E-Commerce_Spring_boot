@@ -93,6 +93,8 @@ public class SecurityConfig {
                             .requestMatchers(HttpMethod.PATCH,"/v1/userDetails/{email}/deleteAdminRole").hasRole(Role.ROLE_SUPER_ADMIN.getValue())
                             .requestMatchers("/v1/userDetails/**").permitAll();// todo: secure these later
 
+                    // Message Controller
+                    request.requestMatchers("/v1/message/send").permitAll();
 
                     // Test Controller
                     request

@@ -8,3 +8,11 @@ services:
       - "6379:6379"
     environment:
       REDIS_PASSWORD: pass
+  rabbitmq:
+    image: rabbitmq
+    container_name: rabbitmq-container
+    ports:
+      - "5672:5672"  # AMQP port
+      - "15672:15672"  # RabbitMQ Management UI port
+    volumes:
+      - /var/lib/rabbitmq  # Mount a volume for persistent data storage
