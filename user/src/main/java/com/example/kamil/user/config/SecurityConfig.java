@@ -1,7 +1,6 @@
 package com.example.kamil.user.config;
 
 import com.example.kamil.user.exception.AppAuthenticationEntryPoint;
-import com.example.kamil.user.exception.GlobalExceptionHandlerAdvice;
 import com.example.kamil.user.filter.AuthorizationFilter;
 import com.example.kamil.user.model.enums.Role;
 import org.springframework.context.annotation.Bean;
@@ -21,8 +20,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.LogoutHandler;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class SecurityConfig {
@@ -50,6 +49,15 @@ public class SecurityConfig {
     @Bean
     public AuthenticationEntryPoint authenticationEntryPoint() {
         return new AppAuthenticationEntryPoint();
+    }
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**").allowedOrigins("*");
+            };
+        };
     }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http , AuthorizationFilter authorizationFilter) throws Exception {
@@ -96,11 +104,13 @@ public class SecurityConfig {
                     // Message Controller
                     request.requestMatchers("/v1/message/send").permitAll();
 
+
                     // Test Controller
                     request
                             .requestMatchers("/v1/test/user").hasRole(Role.ROLE_USER.getValue())
                             .requestMatchers("/v1/test/testAdmin").hasAnyRole(Role.ROLE_ADMIN.getValue());
-
+                    // WebSocketController
+                    request.anyRequest().permitAll();//todo: fix this
 
                 })
                 .sessionManagement(sm->sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
