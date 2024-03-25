@@ -50,15 +50,7 @@ public class SecurityConfig {
     public AuthenticationEntryPoint authenticationEntryPoint() {
         return new AppAuthenticationEntryPoint();
     }
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("*");
-            };
-        };
-    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http , AuthorizationFilter authorizationFilter) throws Exception {
 

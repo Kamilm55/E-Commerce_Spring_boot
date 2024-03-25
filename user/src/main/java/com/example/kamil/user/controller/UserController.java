@@ -4,10 +4,13 @@ import com.example.kamil.common.response.BaseResponse;
 import com.example.kamil.user.model.dto.UserDTO;
 import com.example.kamil.user.model.payload.RegisterPayload;
 import com.example.kamil.user.service.UserService;
+import com.example.kamil.user.service.sse.SseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.net.URI;
 import java.util.List;
@@ -18,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final SseService sseService;
 
     @GetMapping("/getAllUsers")
     public BaseResponse<List<UserDTO>> getAll(){
@@ -69,5 +73,14 @@ public class UserController {
         return  BaseResponse.success(userService.updateUser(email,userRequest));
     }
 
+    @PostMapping("/sse/sendMessageToClients")
+    public void sendMessageToClients(){
+        sseService.sendMessageToClients("WORKS");
+    }
 
+    @GetMapping(path = "/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter subscribe() {
+        // Add the emitter to a list of subscribers or handle it in another way
+        return new SseEmitter(Long.MAX_VALUE);
+    }
 }

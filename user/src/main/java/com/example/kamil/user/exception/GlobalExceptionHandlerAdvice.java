@@ -3,10 +3,12 @@ package com.example.kamil.user.exception;
 import com.example.kamil.user.exception.customExceptions.*;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,12 +21,14 @@ import java.util.Map;
 import java.util.Set;
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandlerAdvice {
 
     @ExceptionHandler(value = UserNotFoundException.class)
     public ResponseEntity<?> handleUserNotFoundException(UserNotFoundException exception){
         return new ResponseEntity<>(exception.getMessage(),HttpStatus.NOT_FOUND);
     }
+
     @ExceptionHandler(value = UserIsNotActiveException.class)
     public ResponseEntity<?> handleUserIsNotActiveException(UserIsNotActiveException exception){
         return new ResponseEntity<>(exception.getMessage(),HttpStatus.BAD_REQUEST);
@@ -56,7 +60,12 @@ public class GlobalExceptionHandlerAdvice {
     public ResponseEntity<?> handleUserForbidden(AccessDeniedException exception){
         return new ResponseEntity<>(exception.getMessage(),HttpStatus.FORBIDDEN);
     }
+    @ExceptionHandler(value = InternalAuthenticationServiceException.class)
+    public ResponseEntity<?> handleUserIsAlreadyExistsWithThisEmail(InternalAuthenticationServiceException exception){
 
+        log.info("hata");
+        return new ResponseEntity<>(exception.getMessage(),HttpStatus.NOT_FOUND);
+    }
     // Validation exceptions
     // Learn:
     //  MethodArgumentNotValidException is specific to Spring and is thrown when there are validation errors during the binding of method parameters, typically in a Spring MVC controller method.
@@ -89,9 +98,9 @@ public class GlobalExceptionHandlerAdvice {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
     // For unhandled exceptions:
-//    @ExceptionHandler(value = Exception.class)
-//    public ResponseEntity<?> generalExceptionHandler(Exception exception){
-//        System.out.println("For unhandled exceptions");
-//        return new ResponseEntity<>(exception.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
-//    }
+    @ExceptionHandler(value = Exception.class)
+    public ResponseEntity<?> generalExceptionHandler(Exception exception){
+        System.out.println("For unhandled exceptions");
+        return new ResponseEntity<>(exception.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }
