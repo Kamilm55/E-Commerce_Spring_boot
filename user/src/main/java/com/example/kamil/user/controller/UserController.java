@@ -12,8 +12,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.UUID;
 
 
 @RestController
@@ -73,14 +75,22 @@ public class UserController {
         return  BaseResponse.success(userService.updateUser(email,userRequest));
     }
 
-    @PostMapping("/sse/sendMessageToClients")
-    public void sendMessageToClients(){
-        sseService.sendMessageToClients("WORKS");
+   @PatchMapping("/{email}/sendRequestForVendorRole")
+   public BaseResponse<Void> sendRequestForVendorRole(@PathVariable String email){
+        userService.sendRequestForVendorRole(email); // send message (push notifications) to admins
+
+       return  BaseResponse.success();
+   }
+    @GetMapping("/getRequestForVendorRole")
+    public SseEmitter getRequestForVendorRole()  {
+        //todo: once get all not read (REQUESTED status) messaged then change status to READ
+
+        return userService.listenVendorRequestEmitter();
     }
 
-    @GetMapping(path = "/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter subscribe() {
-        // Add the emitter to a list of subscribers or handle it in another way
-        return new SseEmitter(Long.MAX_VALUE);
-    }
+//    @GetMapping(path = "/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+//    public SseEmitter subscribe() {
+//        // Add the emitter to a list of subscribers or handle it in another way
+//        return new SseEmitter(Long.MAX_VALUE);
+//    }
 }

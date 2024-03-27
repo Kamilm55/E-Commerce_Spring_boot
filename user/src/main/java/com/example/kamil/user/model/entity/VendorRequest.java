@@ -18,15 +18,17 @@ import java.time.LocalDate;
 @Data
 public class VendorRequest {
     @Id
-    @GeneratedValue()
+    @GeneratedValue
     private Long id;
+    @Column(nullable = false)
     private LocalDate createdAt;
     private LocalDate respondedAt;
 
-    @OneToOne(fetch = FetchType.EAGER , cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER , cascade = CascadeType.ALL)
     @JoinColumn(name = "userDetails_id" , referencedColumnName = "id",nullable = false)
     @JsonIgnore // Ignore during serialization to break the loop
     private LoggedInUserDetails userDetails;
 
+    @Column(nullable = false)
     private VendorRoleStatus vendorRoleStatus;
 }

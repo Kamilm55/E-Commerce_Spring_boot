@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface LoggedInUserDetailsService {
   //  void insertUserDetails(CreateUserDetailsPayload payload);
-    LoggedInUserDetails getUserDetailsForSecurity(User user);
+    LoggedInUserDetails getUserDetailsWithUserPayload(User user);
     LoggedInUserDetailsDTO getUserDetailsByEmail(String email);
     LoggedInUserDetailsDTO updateUserUserDetails(String email, UpdateUserDetailsPayload updateUserDetailsPayload);
     void addAdminRole(String email);

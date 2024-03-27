@@ -1,19 +1,31 @@
 package com.example.kamil.user.service.sse;
 
-import org.springframework.http.MediaType;
+import com.example.kamil.user.model.entity.User;
+import com.example.kamil.user.model.entity.VendorRequest;
+import com.example.kamil.user.model.entity.security.LoggedInUserDetails;
+import com.example.kamil.user.service.LoggedInUserDetailsService;
+import com.example.kamil.user.service.UserService;
+import com.example.kamil.user.service.VendorRequestService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import static com.example.kamil.user.model.enums.VendorRoleStatus.REQUESTED;
+
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class SseService {
 
     private final List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
+
 
     public void addEmitter(SseEmitter emitter) {
         emitters.add(emitter);
@@ -21,20 +33,13 @@ public class SseService {
         emitter.onTimeout(() -> emitters.remove(emitter));
     }
 
-    // Method to send a message to all connected clients
-    public void sendMessageToClients(String message) {
-        List<SseEmitter> deadEmitters = new ArrayList<>();
-        for (SseEmitter emitter : emitters) {
-            try {
-                emitter.send(message, MediaType.TEXT_PLAIN);
-            } catch (IOException e) {
-                emitter.completeWithError(e);
-                deadEmitters.add(emitter);
-            }
-        }
-        // Remove dead emitters
-        emitters.removeAll(deadEmitters);
-    }
+
+
+
+
+
+    //
+
     @Scheduled(fixedRate = 1000)
     public void sendEvents() {
         for (SseEmitter emitter : emitters) {

@@ -22,7 +22,7 @@ public class LoggedInUserDetailsServiceImpl implements LoggedInUserDetailsServic
     private final UserService userService;
 
     @Override
-    public LoggedInUserDetails getUserDetailsForSecurity(User user) {
+    public LoggedInUserDetails getUserDetailsWithUserPayload(User user) {
         return userDetailsRepository.findByUserEmail(user.getEmail());
     }
 

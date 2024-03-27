@@ -2,12 +2,17 @@ package com.example.kamil.user.service.impl;
 
 import com.example.kamil.user.exception.customExceptions.*;
 import com.example.kamil.user.model.dto.UserDTO;
+import com.example.kamil.user.model.dto.VendorRequestDTO;
 import com.example.kamil.user.model.entity.User;
+import com.example.kamil.user.model.entity.VendorRequest;
 import com.example.kamil.user.model.enums.Role;
 import com.example.kamil.user.model.payload.RegisterPayload;
 import com.example.kamil.user.model.entity.security.LoggedInUserDetails;
 import com.example.kamil.user.repository.UserRepository;
+import com.example.kamil.user.service.LoggedInUserDetailsService;
 import com.example.kamil.user.service.UserService;
+import com.example.kamil.user.service.VendorRequestService;
+import com.example.kamil.user.service.sse.SseService;
 import com.example.kamil.user.utils.UserUtil;
 import com.example.kamil.user.utils.converter.UserDTOConverter;
 import jakarta.transaction.Transactional;
@@ -17,10 +22,18 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+
+import static com.example.kamil.user.model.enums.VendorRoleStatus.REQUESTED;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +41,11 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final VendorRequestService vendorRequestService;
+    private final SseService sseService;
+
+    private Map<String, SseEmitter> sseEmitters = new ConcurrentHashMap<>();
+    private static final String SseVendorRequestUrl = "VENDOR_REQUEST_NOTIFICATIONS";
 
     @Override
     public UserDTO getUserByEmail(String email) {
@@ -117,7 +135,104 @@ public class UserServiceImpl implements UserService {
         changeStatusOfUser(email, true);
     }
 
-    //
+    @Override
+    @Transactional
+    public void sendRequestForVendorRole(String email) { //todo:Secure this
+        User user = getUserByEmailForUserDetails(email);
+        LoggedInUserDetails userDetails = user.getUserDetails();
+
+        VendorRequest vendorRequest = VendorRequest.builder()
+                .userDetails(userDetails)
+                .createdAt(LocalDate.now())
+                .vendorRoleStatus(REQUESTED)
+                .build();
+
+        //refactorThis
+
+        // For real time notifications add sse
+        SseEmitter sseEmitter = sseEmitters.get(SseVendorRequestUrl);
+
+        vendorRequestService.insertVendorRequest(vendorRequest);// save request in db
+        //refactorThis
+
+
+
+        //todo: implement expiration logic for rejected or not read messages
+        if (sseEmitter != null) {
+            sseEmitters.forEach( (str,emitter) ->
+                            System.out.println(str + " : " + emitter)
+                    );
+            log.info("Emitter is not null; there is at least one subscribed user (admin)");
+            System.out.println(sseEmitter);
+            try {
+                VendorRequestDTO vendorRequestDto = VendorRequestDTO.builder()
+                        .email(vendorRequest.getUserDetails().getUser().getEmail())
+                        .createdAt(vendorRequest.getCreatedAt())
+                        .respondedAt(vendorRequest.getRespondedAt())
+                        .vendorRoleStatus(vendorRequest.getVendorRoleStatus())
+                        .build();
+                sseEmitter.send(SseEmitter.event().name(SseVendorRequestUrl).data(vendorRequestDto));
+                log.info("VendorRequest Message sent to proper destination which is: {}", SseVendorRequestUrl);
+            } catch (IOException e) {
+                log.error("Failed to send event via SseEmitter", e);//todo:onCompletion not working it works only after error (it can be for version incompatibility)
+                //throw new SseEmitterSendingException("Failed to send event via SseEmitter", e);
+            }
+        } else {
+            // Handle the case where there are no subscribed users (admins) online
+            log.info("No subscribed users (admins) online to receive the event");
+        }
+
+
+    }
+
+    @Override
+    @Transactional
+    public SseEmitter listenVendorRequestEmitter() {
+        SseEmitter sseEmitter = new SseEmitter(Long.MAX_VALUE); // In this case, Long.MAX_VALUE is passed as the timeout value, which effectively means that
+        // the emitter will never timeout.
+        // This indicates that the SSE connection will be kept open indefinitely until either the server or client explicitly closes it
+
+
+        sseEmitters.put(SseVendorRequestUrl , sseEmitter);
+        try {
+            sseEmitter.send(SseEmitter.event().name("Connection opened")); // it is just for ui only event name without data
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        // when user connected check if there are not read messages (when user is not online) show
+        vendorRequestService.findUnreadMessages().forEach( unreadMsg -> {
+             VendorRequestDTO unreadVendorRequestDto = VendorRequestDTO.builder()
+                       .email(unreadMsg.getUserDetails().getUser().getEmail())
+                       .createdAt(unreadMsg.getCreatedAt())
+                       .respondedAt(unreadMsg.getRespondedAt())
+                       .vendorRoleStatus(unreadMsg.getVendorRoleStatus())
+                       .build();
+            try {
+                sseEmitter.send(SseEmitter.event().name(SseVendorRequestUrl).data(unreadVendorRequestDto));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        sseEmitter.onCompletion(() -> {
+                sseEmitters.remove(SseVendorRequestUrl);
+                System.out.println("SSE connection was manually closed");
+        });
+        sseEmitter.onTimeout(() -> {
+            sseEmitters.remove(SseVendorRequestUrl);
+            System.out.println("SSE connection was time outed");
+        });
+
+        sseEmitter.onError((ex) -> {
+            sseEmitters.remove(SseVendorRequestUrl);
+            System.out.println("SSE connection encountered an error: " + ex.getMessage());
+        });
+
+        return sseEmitter;
+    }
+
+    //////////
+
     // It must be used with @transactional annotation , because we call lazy obj authenticatedUser.getUser()
     public void checkUserIsSameWithAuthenticatedUser(String email,String exMessage) {
         // Check that is updated user same with current user?
@@ -130,6 +245,7 @@ public class UserServiceImpl implements UserService {
     public LoggedInUserDetails getAuthenticatedUser() {
         return (LoggedInUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
+
     // Util methods
     private void validateDeactivationPermissions(String email, User user) {
         LoggedInUserDetails authenticatedUser = getAuthenticatedUser();

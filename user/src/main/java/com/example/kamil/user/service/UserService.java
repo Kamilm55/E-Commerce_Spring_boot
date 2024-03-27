@@ -4,6 +4,7 @@ import com.example.kamil.user.model.dto.UserDTO;
 import com.example.kamil.user.model.entity.User;
 import com.example.kamil.user.model.entity.security.LoggedInUserDetails;
 import com.example.kamil.user.model.payload.RegisterPayload;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 
@@ -24,4 +25,7 @@ public interface UserService {
 
     LoggedInUserDetails getAuthenticatedUser();
 
+    void sendRequestForVendorRole(String email);
+
+    SseEmitter listenVendorRequestEmitter();
 }

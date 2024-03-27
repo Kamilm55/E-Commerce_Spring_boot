@@ -45,6 +45,10 @@ public class GlobalExceptionHandlerAdvice {
     public ResponseEntity<?> handlePermissionDeniedException(PermissionDeniedException exception){
         return new ResponseEntity<>(exception.getMessage(),HttpStatus.FORBIDDEN);
     }
+    @ExceptionHandler(value = SseEmitterSendingException.class)
+    public ResponseEntity<?> handleSseEmitterSendingException(SseEmitterSendingException exception){
+        return new ResponseEntity<>(exception.getMessage(),HttpStatus.EXPECTATION_FAILED);
+    }
 
 
     // Auth Exceptions
@@ -62,8 +66,6 @@ public class GlobalExceptionHandlerAdvice {
     }
     @ExceptionHandler(value = InternalAuthenticationServiceException.class)
     public ResponseEntity<?> handleUserIsAlreadyExistsWithThisEmail(InternalAuthenticationServiceException exception){
-
-        log.info("hata");
         return new ResponseEntity<>(exception.getMessage(),HttpStatus.NOT_FOUND);
     }
     // Validation exceptions

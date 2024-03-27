@@ -9,7 +9,7 @@
 <div id="events"></div>
 
 <script>
-  const eventSource = new EventSource("http://localhost:8080/v1/users/sse");
+  const eventSource = new EventSource("http://localhost:8080/v1/users/getRequestForVendorRole");
 
   eventSource.onmessage = (event) => {
     console.log(event)
