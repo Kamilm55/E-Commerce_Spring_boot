@@ -1,9 +1,11 @@
 package com.example.kamil.user;
 
 import com.example.kamil.user.model.dto.UserDTO;
+import com.example.kamil.user.model.entity.VendorRequest;
 import com.example.kamil.user.model.payload.RegisterPayload;
 import com.example.kamil.user.repository.LoggedInUserDetailsRepository;
 import com.example.kamil.user.repository.UserRepository;
+import com.example.kamil.user.repository.VendorRequestRepository;
 import com.example.kamil.user.service.LoggedInUserDetailsService;
 import com.example.kamil.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +13,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @SpringBootApplication
 @EnableScheduling
@@ -21,6 +26,7 @@ public class UserApplication implements CommandLineRunner {
 	private final LoggedInUserDetailsService loggedInUserDetailsService;
 	private final LoggedInUserDetailsRepository loggedInUserDetailsRepository;
 	private final UserRepository userRepository;
+	private final VendorRequestRepository vendorRequestRepository;
 	public static void main(String[] args) {
 		SpringApplication.run(UserApplication.class, args);
 	}
@@ -83,10 +89,15 @@ public class UserApplication implements CommandLineRunner {
 		// GET USER 1
 		//UserDTO user = userService.getUserByEmail(insertedUser.getEmail());
 
-
-
-
 		////////////////////////////
+//		userService.sendRequestForVendorRole(userDTO2.getEmail());
+//
+//		userService.sendRequestForVendorRole(userDTO2.getEmail());
+//
+//		userService.sendRequestForVendorRole(userDTO2.getEmail());
+//		System.out.println(vendorRequestRepository.findFirstByUserDetails_User_EmailOrderByCreatedAtDesc(userDTO2.getEmail()));
+
+		///////////
 
 		//todo: why when i print it works otherwise not?
 		// ->

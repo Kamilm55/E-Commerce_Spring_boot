@@ -1,11 +1,13 @@
 package com.example.kamil.user.service.impl;
 
+import java.time.temporal.ChronoUnit;
 import com.example.kamil.user.exception.customExceptions.*;
 import com.example.kamil.user.model.dto.UserDTO;
 import com.example.kamil.user.model.dto.VendorRequestDTO;
 import com.example.kamil.user.model.entity.User;
 import com.example.kamil.user.model.entity.VendorRequest;
 import com.example.kamil.user.model.enums.Role;
+import com.example.kamil.user.model.enums.VendorRoleStatus;
 import com.example.kamil.user.model.payload.RegisterPayload;
 import com.example.kamil.user.model.entity.security.LoggedInUserDetails;
 import com.example.kamil.user.repository.UserRepository;
@@ -15,25 +17,28 @@ import com.example.kamil.user.service.VendorRequestService;
 import com.example.kamil.user.service.sse.SseService;
 import com.example.kamil.user.utils.UserUtil;
 import com.example.kamil.user.utils.converter.UserDTOConverter;
+import com.example.kamil.user.utils.converter.VendorRequestDTOConverter;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import static com.example.kamil.user.model.enums.VendorRoleStatus.REQUESTED;
+import static com.example.kamil.user.model.enums.Role.ROLE_VENDOR;
+import static com.example.kamil.user.model.enums.VendorRoleStatus.*;
 
 @Service
 @RequiredArgsConstructor
@@ -43,7 +48,8 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final VendorRequestService vendorRequestService;
     private final SseService sseService;
-
+    private static final int EXPIRATION_TIME_FOR_REJECTED_REQUEST = 30;
+    private static final int EXPIRATION_TIME_FOR_READ_REQUEST = 7;
     private Map<String, SseEmitter> sseEmitters = new ConcurrentHashMap<>();
     private static final String SseVendorRequestUrl = "VENDOR_REQUEST_NOTIFICATIONS";
 
@@ -137,13 +143,38 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void sendRequestForVendorRole(String email) { //todo:Secure this
+    public void sendRequestForVendorRole(String email) { //todo:Secure these
         User user = getUserByEmailForUserDetails(email);
         LoggedInUserDetails userDetails = user.getUserDetails();
 
+        if (vendorRequestService.existsByEmail(email)) {
+            VendorRequest vendorRequestFromDb = vendorRequestService.findByEmailForLastRequest(email);
+            System.out.println(vendorRequestFromDb);
+
+            VendorRoleStatus vendorRoleStatus = vendorRequestFromDb.getVendorRoleStatus();
+
+            //refactorThis:
+            // Get the current date
+
+            // Calculate the difference in days between the response time and now
+            long daysSinceResponse = ChronoUnit.DAYS.between(vendorRequestFromDb.getRespondedAt(), LocalDateTime.now());
+
+            if(vendorRoleStatus.equals(REQUESTED)){
+                throw new IllegalStateException("Your request hasn't read yet! You cannot send request before responding or reading your request! ");
+            } else if (vendorRoleStatus.equals(REJECTED) && daysSinceResponse < EXPIRATION_TIME_FOR_REJECTED_REQUEST) {
+                throw new IllegalStateException("You cannot send request for " + EXPIRATION_TIME_FOR_REJECTED_REQUEST + " days after rejected");
+            }
+            else if (vendorRoleStatus.equals(READ) && daysSinceResponse < EXPIRATION_TIME_FOR_READ_REQUEST) {
+                throw new IllegalStateException("You cannot send request for "+ EXPIRATION_TIME_FOR_READ_REQUEST +" days after read");
+            }
+
+            //todo: for APPROVED we give vendor role and only users can send request to this path not vendors
+        }
+
         VendorRequest vendorRequest = VendorRequest.builder()
                 .userDetails(userDetails)
-                .createdAt(LocalDate.now())
+                .createdAt(LocalDateTime.now())
+                .respondedAt(LocalDateTime.now()) // if it equals to createdAt , it means there is no response yet
                 .vendorRoleStatus(REQUESTED)
                 .build();
 
@@ -152,10 +183,8 @@ public class UserServiceImpl implements UserService {
         // For real time notifications add sse
         SseEmitter sseEmitter = sseEmitters.get(SseVendorRequestUrl);
 
-        vendorRequestService.insertVendorRequest(vendorRequest);// save request in db
+        vendorRequestService.save(vendorRequest);// save request in db
         //refactorThis
-
-
 
         //todo: implement expiration logic for rejected or not read messages
         if (sseEmitter != null) {
@@ -170,6 +199,7 @@ public class UserServiceImpl implements UserService {
                         .createdAt(vendorRequest.getCreatedAt())
                         .respondedAt(vendorRequest.getRespondedAt())
                         .vendorRoleStatus(vendorRequest.getVendorRoleStatus())
+                        .id(vendorRequest.getId())
                         .build();
                 sseEmitter.send(SseEmitter.event().name(SseVendorRequestUrl).data(vendorRequestDto));
                 log.info("VendorRequest Message sent to proper destination which is: {}", SseVendorRequestUrl);
@@ -207,6 +237,7 @@ public class UserServiceImpl implements UserService {
                        .createdAt(unreadMsg.getCreatedAt())
                        .respondedAt(unreadMsg.getRespondedAt())
                        .vendorRoleStatus(unreadMsg.getVendorRoleStatus())
+                        .id(unreadMsg.getId())
                        .build();
             try {
                 sseEmitter.send(SseEmitter.event().name(SseVendorRequestUrl).data(unreadVendorRequestDto));
@@ -229,6 +260,42 @@ public class UserServiceImpl implements UserService {
         });
 
         return sseEmitter;
+    }
+    // refactorThis
+    @Override
+    public VendorRequestDTO readVendorRequest(Long vendorReqId) {
+        VendorRequest vendorRequest = vendorRequestService.getById(vendorReqId);
+
+        vendorRequest.setVendorRoleStatus(READ);
+        vendorRequest.setRespondedAt(LocalDateTime.now());
+        vendorRequestService.save(vendorRequest);
+
+        return VendorRequestDTOConverter.convert(vendorRequest);
+    }
+
+    @Override
+    public VendorRequestDTO approveVendorRequest(Long vendorReqId) {
+        VendorRequest vendorRequest = vendorRequestService.getById(vendorReqId);
+
+        vendorRequest.setVendorRoleStatus(APPROVED);
+        vendorRequest.setRespondedAt(LocalDateTime.now());
+        vendorRequestService.save(vendorRequest);
+
+        // give Vendor role to user
+        vendorRequest.getUserDetails().addAuthority(ROLE_VENDOR);
+
+        return VendorRequestDTOConverter.convert(vendorRequest);
+    }
+
+    @Override
+    public VendorRequestDTO rejectVendorRequest(Long vendorReqId) {
+        VendorRequest vendorRequest = vendorRequestService.getById(vendorReqId);
+
+        vendorRequest.setVendorRoleStatus(REJECTED);
+        vendorRequest.setRespondedAt(LocalDateTime.now());
+        vendorRequestService.save(vendorRequest);
+
+        return VendorRequestDTOConverter.convert(vendorRequest);
     }
 
     //////////

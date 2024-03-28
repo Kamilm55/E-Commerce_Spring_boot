@@ -1,6 +1,7 @@
 package com.example.kamil.user.service;
 
 import com.example.kamil.user.model.dto.UserDTO;
+import com.example.kamil.user.model.dto.VendorRequestDTO;
 import com.example.kamil.user.model.entity.User;
 import com.example.kamil.user.model.entity.security.LoggedInUserDetails;
 import com.example.kamil.user.model.payload.RegisterPayload;
@@ -28,4 +29,10 @@ public interface UserService {
     void sendRequestForVendorRole(String email);
 
     SseEmitter listenVendorRequestEmitter();
+
+    VendorRequestDTO readVendorRequest(Long vendorReqId);
+
+    VendorRequestDTO approveVendorRequest(Long vendorReqId);
+
+    VendorRequestDTO rejectVendorRequest(Long vendorReqId);
 }

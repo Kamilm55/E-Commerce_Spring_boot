@@ -2,6 +2,7 @@ package com.example.kamil.user.controller;
 
 import com.example.kamil.common.response.BaseResponse;
 import com.example.kamil.user.model.dto.UserDTO;
+import com.example.kamil.user.model.dto.VendorRequestDTO;
 import com.example.kamil.user.model.payload.RegisterPayload;
 import com.example.kamil.user.service.UserService;
 import com.example.kamil.user.service.sse.SseService;
@@ -9,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -76,6 +78,7 @@ public class UserController {
     }
 
    @PatchMapping("/{email}/sendRequestForVendorRole")
+   @PreAuthorize("!(hasRole('USER') and hasRole('VENDOR'))")
    public BaseResponse<Void> sendRequestForVendorRole(@PathVariable String email){
         userService.sendRequestForVendorRole(email); // send message (push notifications) to admins
 
@@ -86,6 +89,19 @@ public class UserController {
         //todo: once get all not read (REQUESTED status) messaged then change status to READ
 
         return userService.listenVendorRequestEmitter();
+    }
+
+    @PatchMapping("/{vendorReqId}/readVendorRequest")
+    public VendorRequestDTO readVendorRequest(@PathVariable Long vendorReqId)  {
+        return userService.readVendorRequest(vendorReqId);
+    }
+    @PatchMapping("/{vendorReqId}/approveVendorRequest")
+    public VendorRequestDTO approveVendorRequest(@PathVariable Long vendorReqId)  {
+        return userService.approveVendorRequest(vendorReqId);
+    }
+    @PatchMapping("/{vendorReqId}/rejectVendorRequest")
+    public VendorRequestDTO rejectVendorRequest(@PathVariable Long vendorReqId)  {
+        return userService.rejectVendorRequest(vendorReqId);
     }
 
 //    @GetMapping(path = "/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)

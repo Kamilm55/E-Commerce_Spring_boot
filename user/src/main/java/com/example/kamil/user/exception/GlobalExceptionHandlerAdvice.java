@@ -28,6 +28,14 @@ public class GlobalExceptionHandlerAdvice {
     public ResponseEntity<?> handleUserNotFoundException(UserNotFoundException exception){
         return new ResponseEntity<>(exception.getMessage(),HttpStatus.NOT_FOUND);
     }
+    @ExceptionHandler(value = VendorRequestNotFoundException.class)
+    public ResponseEntity<?> handleVendorRequestNotFoundException(VendorRequestNotFoundException exception){
+        return new ResponseEntity<>(exception.getMessage(),HttpStatus.NOT_FOUND);
+    }
+    @ExceptionHandler(value = IllegalStateException.class)
+    public ResponseEntity<?> handleIllegalStateException(IllegalStateException exception){
+        return new ResponseEntity<>(exception.getMessage(),HttpStatus.CONFLICT);
+    }
 
     @ExceptionHandler(value = UserIsNotActiveException.class)
     public ResponseEntity<?> handleUserIsNotActiveException(UserIsNotActiveException exception){

@@ -10,14 +10,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class VendorRequestDTO {
     @Column(nullable = false)
-    private LocalDate createdAt;
-    private LocalDate respondedAt;
+    private Long id;
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
+    private LocalDateTime respondedAt;
     @Column(nullable = false)
     private VendorRoleStatus vendorRoleStatus;
     private String email;

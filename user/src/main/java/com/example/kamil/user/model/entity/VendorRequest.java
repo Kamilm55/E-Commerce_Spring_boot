@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @EqualsAndHashCode(exclude = "userDetails") // this is important for operations in db
@@ -21,8 +22,9 @@ public class VendorRequest {
     @GeneratedValue
     private Long id;
     @Column(nullable = false)
-    private LocalDate createdAt;
-    private LocalDate respondedAt;
+    private LocalDateTime createdAt;
+    @Column(nullable = false)
+    private LocalDateTime respondedAt;// default createdAt = respondedAt
 
     @ManyToOne(fetch = FetchType.EAGER , cascade = CascadeType.ALL)
     @JoinColumn(name = "userDetails_id" , referencedColumnName = "id",nullable = false)

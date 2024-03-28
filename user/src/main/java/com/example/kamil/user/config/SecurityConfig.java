@@ -11,7 +11,10 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -24,6 +27,8 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
+//@EnableWebSecurity
+//@EnableMethodSecurity
 public class SecurityConfig {
 
     @Bean
@@ -80,8 +85,8 @@ public class SecurityConfig {
                             .requestMatchers("/v1/users/{email}/deactivateUser").authenticated()// if user has role admin it can deactivate any user except other admins , i do inside service method
                             .requestMatchers("/v1/users/{email}/activateUser").authenticated()
                             .requestMatchers(HttpMethod.GET,"/v1/users/getAllUsers").hasRole(Role.ROLE_ADMIN.getValue())
-                            .requestMatchers(HttpMethod.GET,"/v1/users/getActiveUsers").hasRole(Role.ROLE_ADMIN.getValue())
-                            .requestMatchers("/v1/users/**").permitAll();
+                            .requestMatchers(HttpMethod.GET,"/v1/users/getActiveUsers").hasRole(Role.ROLE_ADMIN.getValue());
+//                            .requestMatchers("/v1/users/**").permitAll();
 
                     // User Details Controller
                     request
