@@ -1,6 +1,7 @@
 package com.example.kamil.user.service;
 
 import com.example.kamil.user.model.dto.UserDTO;
+import com.example.kamil.user.model.dto.UserNotificationDTO;
 import com.example.kamil.user.model.dto.VendorRequestDTO;
 import com.example.kamil.user.model.entity.User;
 import com.example.kamil.user.model.entity.security.LoggedInUserDetails;
@@ -35,4 +36,8 @@ public interface UserService {
     VendorRequestDTO approveVendorRequest(Long vendorReqId);
 
     VendorRequestDTO rejectVendorRequest(Long vendorReqId);
+
+    SseEmitter listenUserNotificationMessage(String email);
+
+    UserNotificationDTO readUserNotification(Long notificationId);
 }

@@ -32,6 +32,10 @@ public class GlobalExceptionHandlerAdvice {
     public ResponseEntity<?> handleVendorRequestNotFoundException(VendorRequestNotFoundException exception){
         return new ResponseEntity<>(exception.getMessage(),HttpStatus.NOT_FOUND);
     }
+    @ExceptionHandler(value = UserNotificationNotFoundException.class)
+    public ResponseEntity<?> handleUserNotificationNotFoundException(UserNotificationNotFoundException exception){
+        return new ResponseEntity<>(exception.getMessage(),HttpStatus.NOT_FOUND);
+    }
     @ExceptionHandler(value = IllegalStateException.class)
     public ResponseEntity<?> handleIllegalStateException(IllegalStateException exception){
         return new ResponseEntity<>(exception.getMessage(),HttpStatus.CONFLICT);

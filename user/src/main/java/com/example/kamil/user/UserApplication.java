@@ -1,6 +1,8 @@
 package com.example.kamil.user;
 
 import com.example.kamil.user.model.dto.UserDTO;
+import com.example.kamil.user.model.dto.UserNotificationDTO;
+import com.example.kamil.user.model.entity.UserNotification;
 import com.example.kamil.user.model.entity.VendorRequest;
 import com.example.kamil.user.model.payload.RegisterPayload;
 import com.example.kamil.user.repository.LoggedInUserDetailsRepository;
@@ -8,6 +10,7 @@ import com.example.kamil.user.repository.UserRepository;
 import com.example.kamil.user.repository.VendorRequestRepository;
 import com.example.kamil.user.service.LoggedInUserDetailsService;
 import com.example.kamil.user.service.UserService;
+import com.example.kamil.user.utils.mapper.UserNotificationMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;

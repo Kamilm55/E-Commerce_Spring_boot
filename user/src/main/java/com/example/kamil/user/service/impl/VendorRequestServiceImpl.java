@@ -1,6 +1,7 @@
 package com.example.kamil.user.service.impl;
 
 import com.example.kamil.user.exception.customExceptions.VendorRequestNotFoundException;
+import com.example.kamil.user.model.dto.VendorRequestDTO;
 import com.example.kamil.user.model.entity.VendorRequest;
 import com.example.kamil.user.model.enums.VendorRoleStatus;
 import com.example.kamil.user.repository.VendorRequestRepository;
@@ -8,8 +9,6 @@ import com.example.kamil.user.service.VendorRequestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -29,8 +28,15 @@ public class VendorRequestServiceImpl implements VendorRequestService {
     }
 
     @Override
-    public void save(VendorRequest vendorRequest) {
-        vendorRequestRepository.save(vendorRequest);
+    public VendorRequestDTO save(VendorRequest vendorRequest) {
+        VendorRequest savedVendorRequest = vendorRequestRepository.save(vendorRequest);
+        return  VendorRequestDTO.builder()
+                .email(savedVendorRequest.getUserDetails().getEmail())
+                .createdAt(savedVendorRequest.getCreatedAt())
+                .respondedAt(savedVendorRequest.getRespondedAt())
+                .vendorRoleStatus(savedVendorRequest.getVendorRoleStatus())
+                .id(savedVendorRequest.getId())
+                .build();
     }
 
     @Override

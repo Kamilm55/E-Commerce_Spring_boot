@@ -2,6 +2,7 @@ package com.example.kamil.user.controller;
 
 import com.example.kamil.common.response.BaseResponse;
 import com.example.kamil.user.model.dto.UserDTO;
+import com.example.kamil.user.model.dto.UserNotificationDTO;
 import com.example.kamil.user.model.dto.VendorRequestDTO;
 import com.example.kamil.user.model.payload.RegisterPayload;
 import com.example.kamil.user.service.UserService;
@@ -84,13 +85,20 @@ public class UserController {
 
        return  BaseResponse.success();
    }
-    @GetMapping("/getRequestForVendorRole")
-    public SseEmitter getRequestForVendorRole()  {
-        //todo: once get all not read (REQUESTED status) messaged then change status to READ
+    @GetMapping("/listenRequestForVendorRole")
+    public SseEmitter listenRequestForVendorRole()  {
 
         return userService.listenVendorRequestEmitter();
     }
-
+    //todo: create get messages and get user notifications for all history!
+    @GetMapping("/{email}/listenUserNotificationMessage")
+    public SseEmitter listenUserNotificationMessage(@PathVariable String email)  {
+        return userService.listenUserNotificationMessage(email);
+    }
+    @PatchMapping("/{notificationId}/readUserNotification")
+    public UserNotificationDTO readUserNotification(@PathVariable Long notificationId)  {
+        return userService.readUserNotification(notificationId);
+    }
     @PatchMapping("/{vendorReqId}/readVendorRequest")
     public VendorRequestDTO readVendorRequest(@PathVariable Long vendorReqId)  {
         return userService.readVendorRequest(vendorReqId);
@@ -103,6 +111,7 @@ public class UserController {
     public VendorRequestDTO rejectVendorRequest(@PathVariable Long vendorReqId)  {
         return userService.rejectVendorRequest(vendorReqId);
     }
+
 
 //    @GetMapping(path = "/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 //    public SseEmitter subscribe() {
