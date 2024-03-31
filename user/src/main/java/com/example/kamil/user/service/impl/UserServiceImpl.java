@@ -1,5 +1,6 @@
 package com.example.kamil.user.service.impl;
 
+import com.example.kamil.common.response.BaseResponse;
 import com.example.kamil.user.exception.customExceptions.PermissionDeniedException;
 import com.example.kamil.user.exception.customExceptions.UserIsAlreadyExistsWithThisEmailException;
 import com.example.kamil.user.exception.customExceptions.UserIsAlreadyExistsWithThisUsernameException;
@@ -322,6 +323,24 @@ public class UserServiceImpl implements UserService {
 
         return  UserNotificationMapper.INSTANCE.convertToDTO(userNotification);
     }
+
+    @Override
+    @Transactional
+    public List<VendorRequestDTO> getAllVendorRequestsByEmail(String email) {
+        User userFromDB = findUserByEmail(email);
+
+        checkUserIsSameWithAuthenticatedUser(email,"You cannot access other user's requests");
+
+        UserUtil.checkIsActive(userFromDB);
+
+        return vendorRequestService.getAllVendorRequestsByUserEmail(email);
+    }
+
+    @Override
+    public List<VendorRequestDTO> getAllVendorRequests() {
+        return  vendorRequestService.getAllVendorRequests();
+    }
+
 
     //\/\/\/\/\//\//\/\/\/\/\/\/\/\/\/\//\/\/\/\/\/\/\/\/\/\/\/\/\///\//\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\\/
     // It must be used with @transactional annotation , because we call lazy obj authenticatedUser.getUser()

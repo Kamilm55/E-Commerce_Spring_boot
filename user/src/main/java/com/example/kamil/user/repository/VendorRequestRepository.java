@@ -18,4 +18,5 @@ public interface VendorRequestRepository extends JpaRepository<VendorRequest,Lon
     VendorRequest findVendorRequestByUserDetails_User_Email(String email);
     // Custom method to find VendorRequests by user email and createdAt near now
     Optional<VendorRequest> findFirstByUserDetails_User_EmailOrderByCreatedAtDesc(String email);
+    List<VendorRequest> findVendorRequestsByUserDetails_User_Email(String email);
 }

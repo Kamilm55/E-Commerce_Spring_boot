@@ -40,4 +40,6 @@ public interface UserService {
     SseEmitter listenUserNotificationMessage(String email);
 
     UserNotificationDTO readUserNotification(Long notificationId);
+    List<VendorRequestDTO> getAllVendorRequestsByEmail(String email);
+    List<VendorRequestDTO> getAllVendorRequests();
 }

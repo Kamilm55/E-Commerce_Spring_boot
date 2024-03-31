@@ -1,15 +1,18 @@
 package com.example.kamil.user.service.impl;
 
+import com.example.kamil.common.response.BaseResponse;
 import com.example.kamil.user.exception.customExceptions.VendorRequestNotFoundException;
 import com.example.kamil.user.model.dto.VendorRequestDTO;
 import com.example.kamil.user.model.entity.VendorRequest;
 import com.example.kamil.user.model.enums.VendorRoleStatus;
 import com.example.kamil.user.repository.VendorRequestRepository;
 import com.example.kamil.user.service.VendorRequestService;
+import com.example.kamil.user.utils.converter.VendorRequestDTOConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -53,5 +56,15 @@ public class VendorRequestServiceImpl implements VendorRequestService {
     @Override
     public VendorRequest findByEmailForLastRequest(String email) {
         return vendorRequestRepository.findFirstByUserDetails_User_EmailOrderByCreatedAtDesc(email).orElseThrow(()->new VendorRequestNotFoundException("Vendor request not found with this email:" + email));
+    }
+
+    @Override
+    public List<VendorRequestDTO> getAllVendorRequestsByUserEmail(String email) {
+        return vendorRequestRepository.findVendorRequestsByUserDetails_User_Email(email).stream().map(VendorRequestDTOConverter::convert).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<VendorRequestDTO> getAllVendorRequests() {
+     return vendorRequestRepository.findAll().stream().map(VendorRequestDTOConverter::convert).collect(Collectors.toList());
     }
 }

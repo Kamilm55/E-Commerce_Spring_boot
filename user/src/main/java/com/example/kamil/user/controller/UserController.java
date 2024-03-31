@@ -9,16 +9,11 @@ import com.example.kamil.user.service.UserService;
 import com.example.kamil.user.service.sse.SseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.io.IOException;
-import java.net.URI;
 import java.util.List;
-import java.util.UUID;
 
 
 @RestController
@@ -91,6 +86,20 @@ public class UserController {
         return userService.listenVendorRequestEmitter();
     }
     //todo: create get messages and get user notifications for all history!
+
+    //TODO ?  Inside controller , for user specific method do we need path variable or just we can use security context?
+    //  when send req or msg , it can not accept path variable explicitly , we can access it inside auth
+    // explore which is best practice
+    @GetMapping("/{email}/getAllVendorRequests")//for specific user
+    public BaseResponse<List<VendorRequestDTO>> getAllVendorRequests(@PathVariable String email)  {
+
+        return BaseResponse.success(userService.getAllVendorRequestsByEmail(email));
+    }
+    @GetMapping("/getAllVendorRequests")//for all users' requests
+    public BaseResponse<List<VendorRequestDTO>> getAllVendorRequestsForAdmin()  {
+
+        return BaseResponse.success(userService.getAllVendorRequests());
+    }
     @GetMapping("/{email}/listenUserNotificationMessage")
     public SseEmitter listenUserNotificationMessage(@PathVariable String email)  {
         return userService.listenUserNotificationMessage(email);

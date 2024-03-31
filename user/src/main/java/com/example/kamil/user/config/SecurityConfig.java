@@ -82,8 +82,11 @@ public class SecurityConfig {
                     request
                             .requestMatchers(HttpMethod.PUT,"/v1/users/{email}").authenticated()
                             .requestMatchers(HttpMethod.POST,"/v1/users/{email}").hasRole(Role.ROLE_ADMIN.getValue())
-                            .requestMatchers("/v1/users/{email}/deactivateUser").authenticated()// if user has role admin it can deactivate any user except other admins , i do inside service method
-                            .requestMatchers("/v1/users/{email}/activateUser").authenticated()
+//                            .requestMatchers("/v1/users/{email}/deactivateUser").authenticated()// if user has role admin it can deactivate any user except other admins , i do inside service method
+//                            .requestMatchers("/v1/users/{email}/activateUser").authenticated()
+//                            .requestMatchers("/v1/users/{email}/getAllVendorRequests").authenticated()
+                            .requestMatchers("/v1/users/{email}/**").authenticated()//FOR deactivateUser,activateUser,getAllVendorRequests
+                            .requestMatchers(HttpMethod.GET,"/v1/users/getAllVendorRequests").hasRole(Role.ROLE_ADMIN.getValue())
                             .requestMatchers(HttpMethod.GET,"/v1/users/getAllUsers").hasRole(Role.ROLE_ADMIN.getValue())
                             .requestMatchers(HttpMethod.GET,"/v1/users/getActiveUsers").hasRole(Role.ROLE_ADMIN.getValue());
 //                            .requestMatchers("/v1/users/**").permitAll();
